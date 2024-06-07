@@ -4,3 +4,28 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+anyhow = { version = "*", optional = true }
+bindgen = { version = "*", optional = true }
+cargo_metadata = { version = "*", optional = true }
+indoc = { version = "*", optional = true }
+petgraph = { version = "*", optional = true }
+regex = { version = "*", optional = true }
+reqwest = { version = "*", features = ["blocking"], optional = true }
+serde = { version = "*", features = ["derive"], optional = true }
+serde_yaml = { version = "*", optional = true }
+zip = { version = "*", optional = true }
+
+[features]
+generate = [
+    "dep:anyhow",
+    "dep:bindgen",
+    "dep:cargo_metadata",
+    "dep:indoc",
+    "dep:petgraph",
+    "dep:regex",
+    "dep:reqwest",
+    "dep:serde",
+    "dep:serde_yaml",
+    "dep:zip",
+]
+default = ["generate"]

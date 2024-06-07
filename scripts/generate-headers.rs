@@ -343,54 +343,66 @@ impl Type {
                 let mut struct_c = String::new();
                 struct_c.push_str(&format!("// {:#x} bytes (sizeof)\n", self.sizeof));
                 struct_c.push_str(&format!("typedef struct {} {{\n", name));
-                for (i, d) in self
-                    .data
-                    .chunk_by(|a, b| {
-                        a.offset == b.offset && !a.name.as_ref().is_some_and(|n| n.contains(":"))
-                    })
-                    .enumerate()
-                {
-                    if d.len() == 1 {
-                        let ty = types
-                            .iter()
-                            .find(|t| t.id == d[0].id)
-                            .ok_or_else(|| anyhow!("Failed to find type"))?;
-                        struct_c.push_str(&format!(
-                            "    {}; // offset: {:#x} ordinal: {:#x}\n",
-                            ty.c_member_type(
-                                d[0].name
-                                    .as_ref()
-                                    .unwrap_or(&format!("__field_{}", i))
-                                    .to_string(),
-                                types
-                            )?,
-                            d[0].offset,
-                            d[0].ordinal
-                        ));
-                    } else {
-                        // We have an inline union (same offset with multiple fields)
+
+                // Group bitfields with the same offset together so we can work out the 
+                let data = self.data.iter().chunk_by(|a, b| a.offset == b.offset && a.name().contains(":") && b.name().contains(":")).collect::<Vec<_>>();
+
+                // Now if we have multiple field groups with the same offset, they are in a union
+
+                for (i, dg) in data.iter().chunk_by(|a, b| a[0].offset == b[0].offset).enumerate() {
+                    if dg.len() > 1 {
                         struct_c.push_str("    union {\n");
-                        for (j, f) in d.iter().enumerate() {
+                    }
+
+                    for (j, d) in dg.iter().enumerate() {
+                        if d.len() == 1 {
                             let ty = types
                                 .iter()
-                                .find(|t| t.id == f.id)
+                                .find(|t| t.id == d[0].id)
                                 .ok_or_else(|| anyhow!("Failed to find type"))?;
                             struct_c.push_str(&format!(
                                 "        {}; // offset: {:#x} ordinal: {:#x}\n",
                                 ty.c_member_type(
-                                    f.name
+                                    d[0].name
                                         .as_ref()
-                                        .unwrap_or(&format!("__field_{}_{}", i, j))
+                                        .unwrap_or(&format!("__field_{}", i))
                                         .to_string(),
                                     types
                                 )?,
-                                f.offset,
-                                f.ordinal
+                                d[0].offset,
+                                d[0].ordinal
                             ));
+                        } else {
+                            // We have an inline union (same offset with multiple fields)
+                            struct_c.push_str("        union {\n");
+                            for (k, f) in d.iter().enumerate() {
+                                let ty = types
+                                    .iter()
+                                    .find(|t| t.id == f.id)
+                                    .ok_or_else(|| anyhow!("Failed to find type"))?;
+                                struct_c.push_str(&format!(
+                                    "            {}; // offset: {:#x} ordinal: {:#x}\n",
+                                    ty.c_member_type(
+                                        f.name
+                                            .as_ref()
+                                            .unwrap_or(&format!("__field_{}_{}", i, k))
+                                            .to_string(),
+                                        types
+                                    )?,
+                                    f.offset,
+                                    f.ordinal
+                                ));
+                            }
+                            struct_c.push_str("        };\n");
                         }
+                    }
+
+                    if dg.len() > 1 {
                         struct_c.push_str("    };\n");
+                    
                     }
                 }
+
                 struct_c.push_str(&format!("}} {};\n", name));
 
                 Ok(Some(struct_c))
@@ -692,6 +704,7 @@ fn main() -> Result<()> {
                 .arg(&out_file)
                 .status()?;
         }
+        break;
     }
 
     Ok(())

@@ -1,12 +1,14 @@
 use anyhow::{anyhow, Result};
 use cargo_metadata::MetadataCommand;
+use indoc::indoc;
 use petgraph::{algo::toposort, visit::Dfs, Graph};
+use regex::Regex;
 use reqwest::blocking::get;
 use serde::Deserialize;
 use serde_yaml::from_reader;
 use std::{
     collections::{HashMap, HashSet},
-    fmt::Write,
+    fmt::{Display, Formatter, Write},
     fs::{create_dir_all, read_dir, write, File, OpenOptions},
     path::Path,
     process::Command,
@@ -15,6 +17,20 @@ use zip::ZipArchive;
 
 pub const KERNELS_DATA_GITHUB_URL_BASE: &str = "https://github.com/VergiliusProject/kernels-data";
 pub const KERNELS_DATA_VERSION: &str = "master";
+
+// Writeln wrapper to string, which is infallible
+macro_rules! xwriteln {
+    ($($arg:tt)*) => {
+        writeln!($($arg)*).unwrap()
+    };
+}
+
+// Write wrapper to string, which is infallible
+macro_rules! xwrite {
+    ($($arg:tt)*) => {
+        write!($($arg)*).unwrap()
+    };
+}
 
 #[derive(Debug, Clone, Deserialize, PartialEq, Eq)]
 pub struct Os {
@@ -38,6 +54,15 @@ pub enum Kind {
 }
 
 #[derive(Debug, Clone, Deserialize, PartialEq, Eq)]
+pub struct TData {
+    #[serde(default)]
+    name: Option<String>,
+    id: isize,
+    offset: isize,
+    ordinal: isize,
+}
+
+#[derive(Debug, Clone, Deserialize, PartialEq, Eq)]
 pub struct Type {
     #[serde(default)]
     name: Option<String>,
@@ -52,460 +77,592 @@ pub struct Type {
     data: Vec<TData>,
 }
 
-impl Type {
-    pub fn c_member_type(&self, member_name: String, types: &Vec<Type>) -> Result<String> {
-        let name = self.name();
+#[derive(Default, Debug)]
+pub struct FieldBuilder {
+    name: String,
+    ty: String,
+    dim: String,
+    retval: String,
+    args: String,
+    fb_offset: isize,
+}
 
-        Ok(match self.kind {
-            Kind::STRUCT => {
-                if name == "__unnamed" {
-                    // We output the struct inline
-                    let mut struct_c = String::new();
-                    struct_c.push_str("struct {\n");
-                    for (i, d) in self
-                        .data
-                        .chunk_by(|a, b| {
-                            a.offset == b.offset
-                                && !a.name.as_ref().is_some_and(|n| n.contains(":"))
-                        })
-                        .enumerate()
-                    {
-                        if d.len() == 1 {
-                            let ty = types
-                                .iter()
-                                .find(|t| t.id == d[0].id)
-                                .ok_or_else(|| anyhow!("Failed to find type"))?;
-                            struct_c.push_str(&format!(
-                                "    {}; // offset: {:#x} ordinal: {:#x}\n",
-                                ty.c_member_type(
-                                    d[0].name
-                                        .as_ref()
-                                        .unwrap_or(&format!("__field_{}", i))
-                                        .to_string(),
-                                    types
-                                )?,
-                                d[0].offset,
-                                d[0].ordinal
-                            ));
-                        } else {
-                            // We have an inline union (same offset with multiple fields)
-                            struct_c.push_str("    union {\n");
-                            for (j, f) in d.iter().enumerate() {
-                                let ty = types
-                                    .iter()
-                                    .find(|t| t.id == f.id)
-                                    .ok_or_else(|| anyhow!("Failed to find type"))?;
-                                struct_c.push_str(&format!(
-                                    "        {}; // offset: {:#x} ordinal: {:#x}\n",
-                                    ty.c_member_type(
-                                        f.name
-                                            .as_ref()
-                                            .unwrap_or(&format!("__field_{}_{}", i, j))
-                                            .to_string(),
-                                        types
-                                    )?,
-                                    f.offset,
-                                    f.ordinal
-                                ));
-                            }
-                            struct_c.push_str("    };\n");
-                        }
-                    }
-                    struct_c.push_str(&format!("}} {}", member_name));
-                    struct_c
-                } else {
-                    format!("struct {} {}", name, member_name)
-                }
-            }
-            Kind::ENUM => {
-                format!("enum {} {}", name, member_name)
-            }
-            Kind::UNION => {
-                if name == "__unnamed" {
-                    // We output the union inline
-                    let mut union_c = String::new();
-                    union_c.push_str("union {\n");
-                    for (i, d) in self.data.iter().enumerate() {
-                        let ty = types
-                            .iter()
-                            .find(|t| t.id == d.id)
-                            .ok_or_else(|| anyhow!("Failed to find type"))?;
-                        union_c.push_str(&format!(
-                            "    {}; // offset: {:#x} ordinal: {:#x}\n",
-                            ty.c_member_type(
-                                d.name
-                                    .as_ref()
-                                    .unwrap_or(&format!("__field_{}", i))
-                                    .to_string(),
-                                types
-                            )?,
-                            d.offset,
-                            d.ordinal
-                        ));
-                    }
-                    union_c.push_str(&format!("}} {}", member_name));
-                    union_c
-                } else {
-                    format!("union {} {}", name, member_name)
-                }
-            }
-            Kind::ARRAY => {
-                // The element type is data[0]
-                let mut element = types
-                    .iter()
-                    .find(|t| t.id == self.data[0].id)
-                    .ok_or_else(|| anyhow!("Failed to find type"))?;
-                let mut sizes = vec![self.sizeof / element.sizeof];
-
-                while element.kind == Kind::ARRAY {
-                    let sizeof = element.sizeof;
-                    element = types
-                        .iter()
-                        .find(|t| t.id == element.data[0].id)
-                        .ok_or_else(|| anyhow!("Failed to find type"))?;
-                    sizes.push(sizeof / element.sizeof);
-                }
-
-                // Check if the element is a function pointer
-                let is_fptr = if element.kind == Kind::POINTER {
-                    let mut pointee = types
-                        .iter()
-                        .find(|t| t.id == element.data[0].id)
-                        .ok_or_else(|| anyhow!("Failed to find type"))?;
-
-                    while pointee.kind == Kind::POINTER {
-                        pointee = types
-                            .iter()
-                            .find(|t| t.id == pointee.data[0].id)
-                            .ok_or_else(|| anyhow!("Failed to find type"))?;
-                    }
-
-                    pointee.kind == Kind::FUNCTION
-                } else {
-                    false
-                };
-
-                if is_fptr {
-                    element.c_member_type(
-                        format!(
-                            "{}{}",
-                            member_name,
-                            sizes.iter().fold(String::new(), |mut o, s| {
-                                // NOTE: Writes to a string cannot fail
-                                let _ = write!(o, "[{}]", s);
-                                o
-                            })
-                        ),
-                        types,
-                    )?
-                } else {
-                    format!(
-                        "{} {}{}",
-                        element.c_member_type("".to_string(), types)?,
-                        member_name,
-                        sizes.iter().fold(String::new(), |mut o, s| {
-                            // NOTE: Writes to a string cannot fail
-                            let _ = write!(o, "[{}]", s);
-                            o
-                        })
-                    )
-                }
-            }
-            Kind::BASE => {
-                format!("{} {}", name, member_name)
-            }
-            Kind::POINTER => {
-                // The pointee type is data[0]
-                let mut pointee = types
-                    .iter()
-                    .find(|t| t.id == self.data[0].id)
-                    .ok_or_else(|| anyhow!("Failed to find type"))?;
-                let mut pointer_depth: usize = 1;
-
-                while pointee.kind == Kind::POINTER {
-                    pointee = types
-                        .iter()
-                        .find(|t| t.id == pointee.data[0].id)
-                        .ok_or_else(|| anyhow!("Failed to find type"))?;
-
-                    pointer_depth += 1;
-                }
-
-                match pointee.kind {
-                    Kind::FUNCTION => {
-                        // Function pointer syntax
-                        let return_ty = if pointee.data.is_empty() {
-                            "void".to_string()
-                        } else {
-                            let ty = types
-                                .iter()
-                                .find(|t| t.id == pointee.data[0].id)
-                                .ok_or_else(|| anyhow!("Failed to find type"))?;
-                            ty.c_member_type("".to_string(), types)?
-                        };
-
-                        let mut proto = format!(
-                            "{} ({}{})(",
-                            return_ty,
-                            (0..pointer_depth).map(|_| "*").collect::<String>(),
-                            member_name
-                        );
-
-                        for (i, d) in pointee.data.iter().skip(1).enumerate() {
-                            let ty = types
-                                .iter()
-                                .find(|t| t.id == d.id)
-                                .ok_or_else(|| anyhow!("Failed to find type"))?;
-                            proto.push_str(&format!(
-                                "{}{}",
-                                ty.c_member_type("".to_string(), types)?,
-                                if i == pointee.data.len() - 2 {
-                                    ""
-                                } else {
-                                    ", "
-                                }
-                            ));
-                        }
-
-                        proto.push(')');
-
-                        proto
-                    }
-                    _ => {
-                        format!(
-                            "{}{} {}",
-                            pointee.c_member_type("".to_string(), types)?,
-                            (0..pointer_depth).map(|_| "*").collect::<String>(),
-                            member_name
-                        )
-                    }
-                }
-            }
-            Kind::FUNCTION => {
-                // A function pointer type
-
-                // The first data is the return type (if there is a first data, otherwise it is void) and the rest are arguments
-                let return_ty = if self.data.is_empty() {
-                    "void".to_string()
-                } else {
-                    let ty = types
-                        .iter()
-                        .find(|t| t.id == self.data[0].id)
-                        .ok_or_else(|| anyhow!("Failed to find type"))?;
-                    ty.c_member_type("".to_string(), types)?
-                };
-
-                let mut proto = format!("{} (*{})(", return_ty, member_name);
-
-                for (i, d) in self.data.iter().skip(1).enumerate() {
-                    let ty = types
-                        .iter()
-                        .find(|t| t.id == d.id)
-                        .ok_or_else(|| anyhow!("Failed to find type"))?;
-                    proto.push_str(&format!(
-                        "{}{}",
-                        ty.c_member_type("".to_string(), types)?,
-                        if i == self.data.len() - 2 { "" } else { ", " }
-                    ));
-                }
-
-                proto.push(')');
-
-                proto
-            }
-        })
-    }
-
-    pub fn name(&self) -> String {
-        if let Some(name) = self.name.as_ref() {
-            // Rough check if the name is a valid C identifier (only a-zA-Z0-9_)
-            if name.chars().all(|c| c.is_alphanumeric() || c == '_') {
-                name.clone()
-            } else {
-                format!("__anon_{}", self.id)
-            }
+impl Display for FieldBuilder {
+    fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
+        if self.retval.is_empty() {
+            write!(f, "{} {}{}", self.ty, self.name, self.dim)
         } else {
-            format!("__anon_{}", self.id)
-        }
-    }
-
-    pub fn to_c(&self, types: &Vec<Type>) -> Result<Option<String>> {
-        let name = self.name();
-        match self.kind {
-            Kind::STRUCT => {
-                let mut struct_c = String::new();
-                struct_c.push_str(&format!("// {:#x} bytes (sizeof)\n", self.sizeof));
-                struct_c.push_str(&format!("typedef struct {} {{\n", name));
-
-                // Group bitfields with the same offset together so we can work out the
-                let data = self
-                    .data
-                    .chunk_by(|a, b| {
-                        a.offset == b.offset
-                            && a.name.as_ref().is_some_and(|n| n.contains(":"))
-                            && b.name.as_ref().is_some_and(|n| n.contains(":"))
-                    })
-                    .collect::<Vec<_>>();
-
-                // Now if we have multiple field groups with the same offset, they are in a union
-
-                for (union_group_index, union_group) in
-                    data.chunk_by(|a, b| a[0].offset == b[0].offset).enumerate()
-                {
-                    if union_group.len() > 1 {
-                        struct_c.push_str("union {\n");
-                    }
-
-                    for bitfield_group in union_group.iter() {
-                        for (bitfield_index, field) in bitfield_group.iter().enumerate() {
-                            // Emit the field(s if they are bitfields)
-                            let ty = types
-                                .iter()
-                                .find(|t| t.id == field.id)
-                                .ok_or_else(|| anyhow!("Failed to find type"))?;
-
-                            let member_type = ty.c_member_type(
-                                field
-                                    .name
-                                    .as_ref()
-                                    .unwrap_or(&format!("__field_{}", union_group_index))
-                                    .to_string(),
-                                types,
-                            )?;
-
-                            struct_c.push_str(&format!(
-                                "{}; // offset: {:#x} ({}) ordinal: {:#x} ({}) {}\n",
-                                member_type,
-                                field.offset,
-                                field.offset,
-                                field.ordinal,
-                                field.ordinal,
-                                if bitfield_group.len() > 1 {
-                                    format!("bitfield entry {}", bitfield_index)
-                                } else {
-                                    "".to_string()
-                                }
-                            ));
-                        }
-                    }
-
-                    if union_group.len() > 1 {
-                        struct_c.push_str("};\n");
-                    }
-                }
-
-                struct_c.push_str(&format!("}} {};\n", name));
-
-                Ok(Some(struct_c))
-            }
-            Kind::ENUM => {
-                let mut enum_c = String::new();
-                enum_c.push_str(&format!("typedef enum {} {{\n", name));
-                for (i, d) in self.data.iter().enumerate() {
-                    enum_c.push_str(&format!(
-                        "    {} = {}, // ordinal: {:#x}\n",
-                        d.name.as_ref().unwrap_or(&format!("__field_{}", i)),
-                        d.offset,
-                        d.ordinal
-                    ));
-                }
-                enum_c.push_str(&format!("}} {};\n", name));
-                Ok(Some(enum_c))
-            }
-            Kind::UNION => {
-                let mut union_c = String::new();
-                union_c.push_str(&format!("// {:#x} bytes (sizeof)\n", self.sizeof));
-                union_c.push_str(&format!("typedef union {} {{\n", name));
-                for (i, d) in self.data.iter().enumerate() {
-                    let ty = types
-                        .iter()
-                        .find(|t| t.id == d.id)
-                        .ok_or_else(|| anyhow!("Failed to find type"))?;
-                    union_c.push_str(&format!(
-                        "    {}; // offset: {:#x} ordinal: {:#x}\n",
-                        ty.c_member_type(
-                            d.name
-                                .as_ref()
-                                .unwrap_or(&format!("__field_{}", i))
-                                .to_string(),
-                            types
-                        )?,
-                        d.offset,
-                        d.ordinal
-                    ));
-                }
-                union_c.push_str(&format!("}} {};\n", name));
-                Ok(Some(union_c))
-            }
-            Kind::ARRAY => {
-                // Arrays are defined as members inline
-                Ok(None)
-            }
-            Kind::BASE => {
-                match name.as_str() {
-                    "ULONGLONG" => Ok(Some("typedef unsigned long long ULONGLONG;\n".to_string())),
-                    "LONGLONG" => Ok(Some("typedef long long LONGLONG;\n".to_string())),
-                    "ULONG" => Ok(Some("typedef unsigned long ULONG;\n".to_string())),
-                    "LONG" => Ok(Some("typedef long LONG;\n".to_string())),
-                    "USHORT" => Ok(Some("typedef unsigned short USHORT;\n".to_string())),
-                    "SHORT" => Ok(Some("typedef short SHORT;\n".to_string())),
-                    "UCHAR" => Ok(Some("typedef unsigned char UCHAR;\n".to_string())),
-                    "CHAR" => Ok(Some("typedef char CHAR;\n".to_string())),
-                    "WCHAR" => Ok(Some("typedef unsigned short WCHAR;\n".to_string())),
-                    "VOID" => Ok(Some("typedef void VOID;\n".to_string())),
-                    "HRESULT" => Ok(Some("typedef unsigned int HRESULT;\n".to_string())),
-                    // No need to redefine double
-                    "double" => Ok(None),
-                    _ => Ok(Some(format!("typedef void {};\n", name))),
-                }
-            }
-            Kind::POINTER => {
-                // Pointers are defined as members inline
-                Ok(None)
-            }
-            Kind::FUNCTION => {
-                // A function pointer type
-
-                // The first data is the return type (if there is a first data, otherwise it is void) and the rest are arguments
-                let return_ty = if self.data.is_empty() {
-                    "void".to_string()
-                } else {
-                    let ty = types
-                        .iter()
-                        .find(|t| t.id == self.data[0].id)
-                        .ok_or_else(|| anyhow!("Failed to find type"))?;
-                    ty.c_member_type("".to_string(), types)?
-                };
-
-                let mut proto = format!("typedef {} (*{})(", return_ty, name);
-
-                for (i, d) in self.data.iter().skip(1).enumerate() {
-                    let ty = types
-                        .iter()
-                        .find(|t| t.id == d.id)
-                        .ok_or_else(|| anyhow!("Failed to find type"))?;
-                    proto.push_str(&format!(
-                        "{}{}",
-                        ty.c_member_type("".to_string(), types)?,
-                        if i == self.data.len() - 2 { "" } else { ", " }
-                    ));
-                }
-
-                proto.push_str(");\n");
-
-                Ok(Some(proto))
-            }
+            write!(
+                f,
+                "{} ({}{}{})({})",
+                self.retval, self.ty, self.name, self.dim, self.args
+            )
         }
     }
 }
 
-#[derive(Debug, Clone, Deserialize, PartialEq, Eq)]
-pub struct TData {
-    #[serde(default)]
-    name: Option<String>,
-    id: isize,
-    offset: isize,
-    ordinal: isize,
+impl FieldBuilder {
+    pub fn is_top_level(indent: isize) -> bool {
+        indent == 0
+    }
+}
+
+pub struct Builder {
+    pub types: Vec<Type>,
+    pub arch: String,
+}
+
+impl Builder {
+    pub fn new(types: Vec<Type>, arch: String) -> Self {
+        Self { types, arch }
+    }
+
+    pub fn print_enum_fields(&self, fb: &mut FieldBuilder, t: &Type, indent: &mut isize) {
+        if !t.data.is_empty() && t.sizeof != 0 {
+            xwriteln!(fb.ty);
+            xwrite!(fb.ty, " {{");
+            *indent += 1;
+
+            for (i, d) in t.data.iter().enumerate() {
+                if i != 0 && i != t.data.len() {
+                    xwrite!(fb.ty, ",");
+                }
+
+                xwrite!(fb.ty, "\n");
+                xwrite!(fb.ty, "{} = {}", d.name.as_ref().unwrap(), d.offset);
+            }
+            *indent -= 1;
+
+            xwrite!(fb.ty, "\n}}");
+        }
+    }
+
+    pub fn find_duplicate_indices(fields: &[TData], value: isize) -> Vec<usize> {
+        let fields = fields.iter().enumerate().collect::<Vec<_>>();
+        let duplicates = fields
+            .chunk_by(|(_ia, a), (_ib, b)| {
+                a.offset == b.offset
+                    && a.name.as_ref().is_some_and(|n| n.contains(":"))
+                    && b.name.as_ref().is_some_and(|n| n.contains(":"))
+            })
+            .filter_map(|d| (d[0].1.offset == value).then_some(d[0].0))
+            .collect::<Vec<_>>();
+
+        if duplicates.len() <= 1 {
+            vec![]
+        } else {
+            duplicates
+        }
+    }
+
+    pub fn get_size_of_union(&self, struct_fields: &[TData], duplicates: &[usize]) -> usize {
+        let mut sizes = vec![0; duplicates.len() - 1];
+        let mut k = 0;
+        let mut i = duplicates.len() - 1;
+
+        while i > 0 {
+            let ty = self
+                .types
+                .iter()
+                .find(|t| t.id == struct_fields[duplicates[i] - 1].id)
+                .unwrap();
+            sizes[k] = ty.sizeof as usize + struct_fields[duplicates[i] - 1].offset as usize;
+            k += 1;
+            i -= 1;
+        }
+        sizes.sort();
+        sizes[sizes.len() - 1]
+    }
+
+    pub fn first_piece_of_struct(&self, struct_fields: &mut Vec<TData>) -> Vec<Vec<TData>> {
+        let mut ret_lists = Vec::new();
+        let current_field = &struct_fields[0];
+        let duplicates = Self::find_duplicate_indices(struct_fields, current_field.offset);
+
+        if duplicates.is_empty() {
+            ret_lists.push(vec![struct_fields[0].clone()]);
+        } else {
+            let size_of_union = self.get_size_of_union(struct_fields, &duplicates);
+            let max_possible_offset = size_of_union - 1;
+
+            for j in 0..duplicates.len() - 1 {
+                let mut list1 = Vec::new();
+                for n in duplicates[j]..duplicates[j + 1] {
+                    list1.push(struct_fields[n].clone());
+                }
+                ret_lists.push(list1);
+            }
+
+            let mut bottom_border = duplicates[duplicates.len() - 1];
+            let mut k = bottom_border + 1;
+
+            while k < struct_fields.len() {
+                if struct_fields[k].offset as usize > max_possible_offset {
+                    bottom_border = k - 1;
+                    break;
+                } else {
+                    bottom_border += 1;
+                }
+
+                k += 1;
+            }
+
+            let mut list1 = Vec::new();
+
+            for n in duplicates[duplicates.len() - 1]..bottom_border + 1 {
+                list1.push(struct_fields[n].clone());
+            }
+
+            ret_lists.push(list1);
+        }
+
+        for m in 0..ret_lists.len() {
+            for data in &ret_lists[m] {
+                let pos = struct_fields.iter().position(|d| d.id == data.id).unwrap();
+                struct_fields.remove(pos);
+            }
+        }
+
+        ret_lists
+    }
+
+    pub fn construct_field_type(
+        &self,
+        current_field: &TData,
+        fb: &mut FieldBuilder,
+        t: &Type,
+        rp_offset: &mut isize,
+        indent: &mut isize,
+    ) {
+        let ty = self
+            .types
+            .iter()
+            .find(|t| t.id == current_field.id)
+            .unwrap();
+        let mut rp_offset = *rp_offset + current_field.offset;
+        let mut field = self.recursion_processing(ty, indent, &mut rp_offset);
+        field.name = current_field
+            .name
+            .as_ref()
+            .map(String::to_string)
+            .unwrap_or(format!("__anon_{}", current_field.id));
+        field.fb_offset = rp_offset + current_field.offset;
+        xwriteln!(fb.ty);
+        xwrite!(fb.ty, "{};", field);
+        xwrite!(
+            fb.ty,
+            "// offset: {:#x} ({})",
+            field.fb_offset,
+            field.fb_offset
+        );
+    }
+
+    pub fn get_modifier(ty: &Type) -> String {
+        let mut modifier = String::new();
+        if ty.is_const {
+            modifier.push_str("const");
+        }
+        if ty.is_volatile {
+            if ty.is_const {
+                modifier.push_str(" ");
+            }
+            modifier.push_str("volatile");
+        }
+        modifier
+    }
+
+    pub fn rec_struct_processing(
+        &self,
+        struct_fields: &mut Vec<TData>,
+        fb: &mut FieldBuilder,
+        ty: &Type,
+        rp_offset: &mut isize,
+        indent: &mut isize,
+    ) {
+        while !struct_fields.is_empty() {
+            let mut returned = self.first_piece_of_struct(struct_fields);
+
+            if returned.len() > 1 {
+                xwriteln!(fb.ty);
+                xwriteln!(fb.ty, "union");
+                xwrite!(fb.ty, "{{");
+                *indent += 1;
+
+                for each in &mut returned {
+                    if each.len() > 1 {
+                        xwriteln!(fb.ty);
+                        xwriteln!(fb.ty, "struct");
+                        xwrite!(fb.ty, "{{");
+                        *indent += 1;
+                        self.rec_struct_processing(each, fb, ty, rp_offset, indent);
+                        *indent -= 1;
+                        xwriteln!(fb.ty);
+                        xwrite!(fb.ty, "}};");
+                    } else {
+                        let current_field = &each[0];
+                        self.construct_field_type(current_field, fb, ty, rp_offset, indent);
+                    }
+                }
+                *indent -= 1;
+                xwriteln!(fb.ty);
+                xwrite!(fb.ty, "}};");
+            } else {
+                let current_field = &returned[0][0];
+                self.construct_field_type(current_field, fb, ty, rp_offset, indent)
+            }
+        }
+    }
+
+    pub fn print_struct_fields(
+        &self,
+        fb: &mut FieldBuilder,
+        ty: &Type,
+        indent: &mut isize,
+        rp_offset: &mut isize,
+    ) {
+        if !ty.data.is_empty() && ty.sizeof != 0 {
+            xwriteln!(fb.ty);
+            xwrite!(fb.ty, "{{");
+            *indent += 1;
+            let mut fields = ty.data.clone();
+
+            self.rec_struct_processing(&mut fields, fb, ty, rp_offset, indent);
+
+            xwriteln!(fb.ty);
+            xwrite!(fb.ty, "}}");
+            *indent -= 1;
+        } else {
+            xwriteln!(fb.ty);
+            xwrite!(fb.ty, "{{");
+            xwriteln!(fb.ty);
+            xwrite!(fb.ty, "}}");
+        }
+    }
+
+    pub fn print_union_fields(
+        &self,
+        fb: &mut FieldBuilder,
+        ty: &Type,
+        indent: &mut isize,
+        rp_offset: &mut isize,
+    ) {
+        if !ty.data.is_empty() && ty.sizeof != 0 {
+            xwriteln!(fb.ty, "\n{{");
+            let fields = ty.data.clone();
+            *indent += 1;
+            let mut beginning = false;
+            let last = fields.len() - 1;
+
+            for i in 0..fields.len() {
+                let ty = self.types.iter().find(|t| t.id == fields[i].id).unwrap();
+                let mut field = self.recursion_processing(ty, indent, rp_offset);
+                field.name = fields[i]
+                    .name
+                    .as_ref()
+                    .map(|n| n.to_string())
+                    .unwrap_or(format!("__field_{}", i));
+                field.fb_offset = *rp_offset + fields[i].offset;
+
+                if i == last {
+                    if beginning {
+                        xwriteln!(fb.ty);
+                        xwrite!(fb.ty, "}};");
+                    }
+
+                    let mut str = String::new();
+                    xwriteln!(str);
+                    xwrite!(str, "{};", field);
+                    // Regex replace "<.+?>" to ""
+                    xwrite!(
+                        fb.ty,
+                        "{} // offset: {:#x} ({})",
+                        Regex::new("(<.+?>)").unwrap().replace(&str, ""),
+                        field.fb_offset,
+                        field.fb_offset
+                    );
+
+                    break;
+                }
+
+                if fields[i].offset == fields[i + 1].offset {
+                    let mut str = String::new();
+                    xwriteln!(str);
+                    xwrite!(str, "{};", field);
+                    xwrite!(
+                        fb.ty,
+                        "{} // offset: {:#x} ({})",
+                        Regex::new("(<.+?>)").unwrap().replace(&str, ""),
+                        field.fb_offset,
+                        field.fb_offset
+                    );
+                } else if fields[i].offset != fields[i + 1].offset && !beginning {
+                    beginning = true;
+
+                    let mut str = String::new();
+                    xwriteln!(str);
+                    xwriteln!(str, "struct");
+                    xwriteln!(str, "{{");
+                    xwrite!(str, "{};", field);
+                    xwrite!(
+                        fb.ty,
+                        "{} // offset: {:#x} ({})",
+                        Regex::new("(<.+?>)").unwrap().replace(&str, ""),
+                        field.fb_offset,
+                        field.fb_offset
+                    )
+                } else if fields[i].offset != fields[i + 1].offset && beginning {
+                    beginning = false;
+
+                    let mut str = String::new();
+                    xwriteln!(str);
+                    xwrite!(str, "{}", field);
+                    xwriteln!(
+                        fb.ty,
+                        "{} // offset: {:#x} ({})",
+                        Regex::new("(<.+?>)").unwrap().replace(&str, ""),
+                        field.fb_offset,
+                        field.fb_offset
+                    );
+                    xwrite!(fb.ty, "}};");
+                }
+            }
+            *indent -= 1;
+            xwriteln!(fb.ty);
+            xwrite!(fb.ty, "}}");
+        }
+    }
+
+    pub fn recursion_processing(
+        &self,
+        ty: &Type,
+        indent: &mut isize,
+        rp_offset: &mut isize,
+    ) -> FieldBuilder {
+        match ty.kind {
+            Kind::BASE => {
+                if *indent != 0 {
+                    let mut fb = FieldBuilder::default();
+                    xwrite!(
+                        fb.ty,
+                        "{} {}",
+                        Self::get_modifier(ty),
+                        ty.name.as_ref().unwrap()
+                    );
+                    fb
+                } else {
+                    let mut fb = FieldBuilder::default();
+                    match ty.name.as_ref().unwrap().as_str() {
+                        "ULONGLONG" => {
+                            xwriteln!(fb.ty, "typedef unsigned long long ULONGLONG;");
+                        }
+                        "LONGLONG" => {
+                            xwriteln!(fb.ty, "typedef long long LONGLONG;");
+                        }
+                        "ULONG" => {
+                            xwriteln!(fb.ty, "typedef unsigned long ULONG;");
+                        }
+                        "LONG" => {
+                            xwriteln!(fb.ty, "typedef long LONG;");
+                        }
+                        "USHORT" => {
+                            xwriteln!(fb.ty, "typedef unsigned short USHORT;");
+                        }
+                        "SHORT" => {
+                            xwriteln!(fb.ty, "typedef long SHORT;");
+                        }
+                        "UCHAR" => {
+                            xwriteln!(fb.ty, "typedef unsigned char UCHAR;");
+                        }
+                        "CHAR" => {
+                            xwriteln!(fb.ty, "typedef char CHAR;");
+                        }
+                        "WCHAR" => {
+                            xwriteln!(fb.ty, "typedef unsigned short WCHAR;");
+                        }
+                        "VOID" => {
+                            xwriteln!(fb.ty, "typedef void VOID;");
+                        }
+                        "HRESULT" => {
+                            xwriteln!(fb.ty, "typedef unsigned int HRESULT;");
+                        }
+                        _ => {}
+                    }
+                    fb
+                }
+            }
+            Kind::POINTER => {
+                if *indent != 0 {
+                    let ref_type = self.types.iter().find(|t| t.id == ty.data[0].id).unwrap();
+
+                    if ref_type.kind == Kind::STRUCT
+                        && ref_type.name.as_ref().is_some_and(|n| n == "<unnamed-tag>")
+                    {
+                        let mut fb = self.recursion_processing(ref_type, indent, rp_offset);
+                        xwrite!(fb.ty, "*{}", Self::get_modifier(ty));
+                        fb.fb_offset = *rp_offset;
+                        return fb;
+                    }
+
+                    if ref_type.kind == Kind::STRUCT {
+                        let mut fb = FieldBuilder::default();
+                        xwrite!(
+                            fb.ty,
+                            "struct {} * {}",
+                            ref_type.name.as_ref().unwrap(),
+                            Self::get_modifier(ty)
+                        );
+                        return fb;
+                    }
+
+                    let mut fb = self.recursion_processing(ref_type, indent, rp_offset);
+                    xwrite!(fb.ty, "*{}", Self::get_modifier(ty));
+                    fb
+                } else {
+                    FieldBuilder::default()
+                }
+            }
+            Kind::ARRAY => {
+                if *indent != 0 {
+                    let ref_type = self.types.iter().find(|t| t.id == ty.data[0].id).unwrap();
+                    let mut fb = self.recursion_processing(ref_type, indent, rp_offset);
+                    fb.dim = format!("[{}]", ty.data[0].offset);
+                    fb
+                } else {
+                    FieldBuilder::default()
+                }
+            }
+            Kind::FUNCTION => {
+                if *indent != 0 {
+                    let mut fb = FieldBuilder::default();
+
+                    let func_components = ty.data.iter().collect::<Vec<_>>();
+                    let mut counter = 0;
+
+                    for component in &func_components {
+                        println!("component: {component:?}");
+                        let component_ty =
+                            self.types.iter().find(|t| t.id == component.id).unwrap();
+                        println!("component_ty: {component_ty:?}");
+                        let mut fb_type =
+                            self.recursion_processing(component_ty, indent, rp_offset);
+                        println!("fb_type: {fb_type:?}");
+                        if component.name.as_ref().is_some_and(|n| n == "return") {
+                            xwrite!(fb.retval, "{}", fb_type.to_string());
+                        } else {
+                            fb_type.name = format!("arg{}", counter);
+                            fb.args.push_str(&fb_type.to_string());
+                            if counter != func_components.len() - 1 {
+                                fb.args.push_str(", ");
+                            }
+                        }
+                        println!("fb: {fb:?}");
+                        counter += 1;
+                    }
+
+                    fb
+                } else {
+                    FieldBuilder::default()
+                }
+            }
+            Kind::STRUCT => {
+                let mut fb = FieldBuilder::default();
+
+                if *indent == 0 {
+                    xwriteln!(fb.ty, "// {:#x} ({}) bytes", ty.sizeof, ty.sizeof);
+                    xwriteln!(fb.ty, "struct {}", ty.name.as_ref().unwrap());
+                    self.print_struct_fields(&mut fb, ty, indent, rp_offset);
+                    xwrite!(fb.ty, ";");
+                } else if ty.name.as_ref().is_some_and(|n| n == "<unnamed-tag>")
+                    || ty.name.as_ref().is_some_and(|n| n == "__unnamed")
+                {
+                    xwrite!(fb.ty, "struct");
+                    self.print_struct_fields(&mut fb, ty, indent, rp_offset);
+                } else {
+                    xwrite!(
+                        fb.ty,
+                        "{} struct {}",
+                        Self::get_modifier(ty),
+                        ty.name.as_ref().unwrap()
+                    );
+                }
+
+                fb
+            }
+            Kind::ENUM => {
+                let mut fb = FieldBuilder::default();
+
+                if *indent == 0 {
+                    xwriteln!(fb.ty, "// {:#x} ({}) bytes", ty.sizeof, ty.sizeof);
+                    xwrite!(fb.ty, "enum {}", ty.name.as_ref().unwrap());
+                    self.print_enum_fields(&mut fb, ty, indent);
+                    xwrite!(fb.ty, ";");
+                } else if ty.name.as_ref().is_some_and(|n| n == "<unnamed-tag>")
+                    || ty.name.as_ref().is_some_and(|n| n == "__unnamed")
+                {
+                    xwrite!(fb.ty, "enum");
+                    self.print_enum_fields(&mut fb, ty, indent);
+                } else {
+                    xwrite!(
+                        fb.ty,
+                        "enum {} {}",
+                        Self::get_modifier(ty),
+                        ty.name.as_ref().unwrap()
+                    );
+                }
+
+                fb
+            }
+            Kind::UNION => {
+                let mut fb = FieldBuilder::default();
+
+                if *indent == 0 {
+                    xwriteln!(fb.ty, "// {:#x} ({}) bytes", ty.sizeof, ty.sizeof);
+                    xwrite!(fb.ty, "union {}", ty.name.as_ref().unwrap());
+                    self.print_union_fields(&mut fb, ty, indent, rp_offset);
+                    xwrite!(fb.ty, ";");
+                } else if ty.name.as_ref().is_some_and(|n| n == "<unnamed-tag>")
+                    || ty.name.as_ref().is_some_and(|n| n == "__unnamed")
+                {
+                    xwrite!(fb.ty, "{} union", Self::get_modifier(ty));
+                    self.print_union_fields(&mut fb, ty, indent, rp_offset);
+                } else {
+                    xwrite!(
+                        fb.ty,
+                        "union {} {}",
+                        ty.name.as_ref().unwrap(),
+                        Self::get_modifier(ty),
+                    );
+                }
+
+                fb
+            }
+        }
+    }
+
+    pub fn build(&self) -> Result<String> {
+        let mut built = String::new();
+        let mut built_types = HashSet::new();
+        self.types.iter().for_each(|t| {
+            if !built_types.contains(
+                t.name
+                    .as_ref()
+                    .unwrap_or(&format!("__anon_{}", t.id))
+                    .as_str(),
+            ) && !t.name.as_ref().unwrap_or(&String::new()).starts_with("<")
+            {
+                let built_type = self.recursion_processing(t, &mut 0, &mut 0);
+                xwriteln!(&mut built, "{}", built_type);
+
+                built_types.insert(
+                    t.name
+                        .as_ref()
+                        .unwrap_or(&format!("__anon_{}", t.id))
+                        .to_string(),
+                );
+            }
+        });
+        Ok(built)
+    }
 }
 
 fn kernels_data_url() -> String {
@@ -613,30 +770,25 @@ fn to_c(data: &Os) -> Result<String> {
         }
     }
 
-    let mut c_file = String::new();
-
     let dependencies = toposort(&dependency_graph, None)
         .map_err(|_| anyhow!("Topological sort failed"))?
         .into_iter()
         .collect::<Vec<_>>();
 
-    let mut defined = HashSet::new();
-
-    for dependency in dependencies {
-        let ty = types
+    let builder = Builder::new(
+        dependencies
             .iter()
-            .find(|t| node_ids.get(&t.id).is_some_and(|n| *n == dependency))
-            .ok_or_else(|| anyhow!("Failed to find type"))?;
-        if !defined.contains(&ty.name()) && ty.name() != "__unnamed" {
-            if let Some(ty_c) = ty.to_c(&types)? {
-                c_file.push_str(&ty_c);
-                c_file.push('\n');
-                defined.insert(ty.name());
-            }
-        }
-    }
+            .filter_map(|d| {
+                types
+                    .iter()
+                    .find(|t| node_ids.get(&t.id).is_some_and(|n| n == d))
+                    .cloned()
+            })
+            .collect::<Vec<_>>(),
+        data.arch.clone(),
+    );
 
-    Ok(c_file)
+    builder.build()
 }
 
 pub fn generate_headers() -> Result<()> {
@@ -691,14 +843,16 @@ pub fn generate_headers() -> Result<()> {
 
     for d in data {
         let out_file = headers_dir.join(format!("bindings-{}-{}.h", d.buildnumber, d.arch));
-        if !out_file.exists() {
-            let c_file = to_c(&d)?;
-            write(&out_file, c_file)?;
-            Command::new("clang-format")
-                .arg("-i")
-                .arg(&out_file)
-                .status()?;
-        }
+        let c_file = indoc! {"
+            #include <stdint.h>
+        "}
+        .to_string()
+            + &to_c(&d)?;
+        write(&out_file, c_file)?;
+        Command::new("clang-format")
+            .arg("-i")
+            .arg(&out_file)
+            .status()?;
         break;
     }
 
