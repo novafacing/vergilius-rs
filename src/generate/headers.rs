@@ -120,7 +120,7 @@ impl Builder {
     pub fn print_enum_fields(&self, fb: &mut FieldBuilder, t: &Type, indent: &mut isize) {
         if !t.data.is_empty() && t.sizeof != 0 {
             xwriteln!(fb.ty);
-            xwrite!(fb.ty, " {{");
+            xwriteln!(fb.ty, " {{");
             *indent += 1;
 
             for (i, d) in t.data.iter().enumerate() {
@@ -230,7 +230,7 @@ impl Builder {
         &self,
         current_field: &TData,
         fb: &mut FieldBuilder,
-        t: &Type,
+        _t: &Type,
         rp_offset: &mut isize,
         indent: &mut isize,
     ) {
@@ -249,11 +249,17 @@ impl Builder {
         field.fb_offset = rp_offset + current_field.offset;
         xwriteln!(fb.ty);
         xwrite!(fb.ty, "{};", field);
+        // xwrite!(
+        //     fb.ty,
+        //     "// offset: {:#x} ({})",
+        //     field.fb_offset,
+        //     field.fb_offset
+        // );
         xwrite!(
             fb.ty,
             "// offset: {:#x} ({})",
-            field.fb_offset,
-            field.fb_offset
+            current_field.offset,
+            current_field.offset
         );
     }
 
@@ -284,15 +290,14 @@ impl Builder {
 
             if returned.len() > 1 {
                 xwriteln!(fb.ty);
-                xwriteln!(fb.ty, "union");
+                xwrite!(fb.ty, "union");
                 xwrite!(fb.ty, "{{");
                 *indent += 1;
 
                 for each in &mut returned {
                     if each.len() > 1 {
                         xwriteln!(fb.ty);
-                        xwriteln!(fb.ty, "struct");
-                        xwrite!(fb.ty, "{{");
+                        xwrite!(fb.ty, "struct {{");
                         *indent += 1;
                         self.rec_struct_processing(each, fb, ty, rp_offset, indent);
                         *indent -= 1;
@@ -321,7 +326,6 @@ impl Builder {
         rp_offset: &mut isize,
     ) {
         if !ty.data.is_empty() && ty.sizeof != 0 {
-            xwriteln!(fb.ty);
             xwrite!(fb.ty, "{{");
             *indent += 1;
             let mut fields = ty.data.clone();
@@ -347,7 +351,7 @@ impl Builder {
         rp_offset: &mut isize,
     ) {
         if !ty.data.is_empty() && ty.sizeof != 0 {
-            xwriteln!(fb.ty, "\n{{");
+            xwriteln!(fb.ty, "{{");
             let fields = ty.data.clone();
             *indent += 1;
             let mut beginning = false;
@@ -365,15 +369,13 @@ impl Builder {
 
                 if i == last {
                     if beginning {
-                        xwriteln!(fb.ty);
                         xwrite!(fb.ty, "}};");
                     }
 
                     let mut str = String::new();
-                    xwriteln!(str);
                     xwrite!(str, "{};", field);
                     // Regex replace "<.+?>" to ""
-                    xwrite!(
+                    xwriteln!(
                         fb.ty,
                         "{} // offset: {:#x} ({})",
                         Regex::new("(<.+?>)").unwrap().replace(&str, ""),
@@ -386,9 +388,8 @@ impl Builder {
 
                 if fields[i].offset == fields[i + 1].offset {
                     let mut str = String::new();
-                    xwriteln!(str);
                     xwrite!(str, "{};", field);
-                    xwrite!(
+                    xwriteln!(
                         fb.ty,
                         "{} // offset: {:#x} ({})",
                         Regex::new("(<.+?>)").unwrap().replace(&str, ""),
@@ -399,11 +400,9 @@ impl Builder {
                     beginning = true;
 
                     let mut str = String::new();
-                    xwriteln!(str);
-                    xwriteln!(str, "struct");
-                    xwriteln!(str, "{{");
+                    xwriteln!(str, "struct {{");
                     xwrite!(str, "{};", field);
-                    xwrite!(
+                    xwriteln!(
                         fb.ty,
                         "{} // offset: {:#x} ({})",
                         Regex::new("(<.+?>)").unwrap().replace(&str, ""),
@@ -414,8 +413,7 @@ impl Builder {
                     beginning = false;
 
                     let mut str = String::new();
-                    xwriteln!(str);
-                    xwrite!(str, "{}", field);
+                    xwrite!(str, "{};", field);
                     xwriteln!(
                         fb.ty,
                         "{} // offset: {:#x} ({})",
@@ -453,37 +451,37 @@ impl Builder {
                     let mut fb = FieldBuilder::default();
                     match ty.name.as_ref().unwrap().as_str() {
                         "ULONGLONG" => {
-                            xwriteln!(fb.ty, "typedef unsigned long long ULONGLONG;");
+                            xwriteln!(fb.ty, "typedef uint64_t ULONGLONG;");
                         }
                         "LONGLONG" => {
-                            xwriteln!(fb.ty, "typedef long long LONGLONG;");
+                            xwriteln!(fb.ty, "typedef int64_t LONGLONG;");
                         }
                         "ULONG" => {
-                            xwriteln!(fb.ty, "typedef unsigned long ULONG;");
+                            xwriteln!(fb.ty, "typedef uint32_t ULONG;");
                         }
                         "LONG" => {
-                            xwriteln!(fb.ty, "typedef long LONG;");
+                            xwriteln!(fb.ty, "typedef int32_t LONG;");
                         }
                         "USHORT" => {
-                            xwriteln!(fb.ty, "typedef unsigned short USHORT;");
+                            xwriteln!(fb.ty, "typedef uint16_t USHORT;");
                         }
                         "SHORT" => {
-                            xwriteln!(fb.ty, "typedef long SHORT;");
+                            xwriteln!(fb.ty, "typedef int16_t SHORT;");
                         }
                         "UCHAR" => {
-                            xwriteln!(fb.ty, "typedef unsigned char UCHAR;");
+                            xwriteln!(fb.ty, "typedef uint8_t UCHAR;");
                         }
                         "CHAR" => {
-                            xwriteln!(fb.ty, "typedef char CHAR;");
+                            xwriteln!(fb.ty, "typedef int8_t CHAR;");
                         }
                         "WCHAR" => {
-                            xwriteln!(fb.ty, "typedef unsigned short WCHAR;");
+                            xwriteln!(fb.ty, "typedef uint16_t WCHAR;");
                         }
                         "VOID" => {
                             xwriteln!(fb.ty, "typedef void VOID;");
                         }
                         "HRESULT" => {
-                            xwriteln!(fb.ty, "typedef unsigned int HRESULT;");
+                            xwriteln!(fb.ty, "typedef int32_t HRESULT;");
                         }
                         _ => {}
                     }
@@ -525,7 +523,7 @@ impl Builder {
                 if *indent != 0 {
                     let ref_type = self.types.iter().find(|t| t.id == ty.data[0].id).unwrap();
                     let mut fb = self.recursion_processing(ref_type, indent, rp_offset);
-                    fb.dim = format!("[{}]", ty.data[0].offset);
+                    fb.dim = format!("[{}]", ty.data[0].offset) + &fb.dim;
                     fb
                 } else {
                     FieldBuilder::default()
@@ -539,13 +537,10 @@ impl Builder {
                     let mut counter = 0;
 
                     for component in &func_components {
-                        println!("component: {component:?}");
                         let component_ty =
                             self.types.iter().find(|t| t.id == component.id).unwrap();
-                        println!("component_ty: {component_ty:?}");
                         let mut fb_type =
                             self.recursion_processing(component_ty, indent, rp_offset);
-                        println!("fb_type: {fb_type:?}");
                         if component.name.as_ref().is_some_and(|n| n == "return") {
                             xwrite!(fb.retval, "{}", fb_type.to_string());
                         } else {
@@ -555,7 +550,6 @@ impl Builder {
                                 fb.args.push_str(", ");
                             }
                         }
-                        println!("fb: {fb:?}");
                         counter += 1;
                     }
 
@@ -571,7 +565,7 @@ impl Builder {
                     xwriteln!(fb.ty, "// {:#x} ({}) bytes", ty.sizeof, ty.sizeof);
                     xwriteln!(fb.ty, "struct {}", ty.name.as_ref().unwrap());
                     self.print_struct_fields(&mut fb, ty, indent, rp_offset);
-                    xwrite!(fb.ty, ";");
+                    xwriteln!(fb.ty, ";");
                 } else if ty.name.as_ref().is_some_and(|n| n == "<unnamed-tag>")
                     || ty.name.as_ref().is_some_and(|n| n == "__unnamed")
                 {
@@ -595,7 +589,7 @@ impl Builder {
                     xwriteln!(fb.ty, "// {:#x} ({}) bytes", ty.sizeof, ty.sizeof);
                     xwrite!(fb.ty, "enum {}", ty.name.as_ref().unwrap());
                     self.print_enum_fields(&mut fb, ty, indent);
-                    xwrite!(fb.ty, ";");
+                    xwriteln!(fb.ty, ";");
                 } else if ty.name.as_ref().is_some_and(|n| n == "<unnamed-tag>")
                     || ty.name.as_ref().is_some_and(|n| n == "__unnamed")
                 {
@@ -619,7 +613,7 @@ impl Builder {
                     xwriteln!(fb.ty, "// {:#x} ({}) bytes", ty.sizeof, ty.sizeof);
                     xwrite!(fb.ty, "union {}", ty.name.as_ref().unwrap());
                     self.print_union_fields(&mut fb, ty, indent, rp_offset);
-                    xwrite!(fb.ty, ";");
+                    xwriteln!(fb.ty, ";");
                 } else if ty.name.as_ref().is_some_and(|n| n == "<unnamed-tag>")
                     || ty.name.as_ref().is_some_and(|n| n == "__unnamed")
                 {
@@ -853,7 +847,6 @@ pub fn generate_headers() -> Result<()> {
             .arg("-i")
             .arg(&out_file)
             .status()?;
-        break;
     }
 
     Ok(())
