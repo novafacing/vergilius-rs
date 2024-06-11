@@ -79,9 +79,9 @@ pub fn generate_bindings() -> Result<()> {
             .header(bindings_file.to_string_lossy())
             .generate()?;
 
-        let mut bindings_rs = bindings
+        let bindings_rs = bindings
             .to_string()
-            .replace(r#"#[doc = " "#, "//")
+            .replace(r#"#[doc = " "#, r#"#[doc = ""#)
             .to_string();
 
         write(out_file, bindings_rs)?;
