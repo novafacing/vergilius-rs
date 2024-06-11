@@ -1,7 +1,14 @@
 [package]
 name = "vergilius"
 version = "0.1.0"
+authors = ["novafacing <rowanbhart@gmail.com>"]
 edition = "2021"
+description = "Automatically generated Windows internals structures from vergiliusproject.com"
+documentation = "https://docs.rs/vergilius"
+homepage = "https://github.com/novafacing/vergilius-rs"
+repository = "https://github.com/novafacing/vergilius-rs"
+license = "Apache-2.0"
+keywords = ["windows", "internals"]
 
 [[bin]]
 name = "generate-headers"
