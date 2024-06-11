@@ -91,7 +91,10 @@ pub fn generate_bindings() -> Result<()> {
 
     let bindings_rs = modules
         .iter()
-        .map(|module| format!("pub mod {};", module))
+        .map(|module| formatdoc!{"
+            #[cfg(not(docsrs))]
+            pub mod {};
+        ", module})
         .collect::<Vec<_>>()
         .join("\n");
 
