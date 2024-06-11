@@ -6136,8 +6136,8 @@ struct _TEB {
   ULONG FpSoftwareStatusRegister;       // offset: 0xc8 (200)
   VOID *SystemReserved1[54];            // offset: 0xcc (204)
   LONG ExceptionCode;                   // offset: 0x1a4 (420)
-  struct _ACTIVATION_CONTEXT_STACK
-      ActivationContextStack;                 // offset: 0x1a8 (424)
+  struct _ACTIVATION_CONTEXT_STACK ActivationContextStack; // offset: 0x1a8
+                                                           //(424)
   UCHAR SpareBytes1[24];                      // offset: 0x1bc (444)
   struct _GDI_TEB_BATCH GdiTebBatch;          // offset: 0x1d4 (468)
   struct _CLIENT_ID RealClientId;             // offset: 0x6b4 (1716)
@@ -6476,8 +6476,8 @@ struct _WMI_LOGGER_CONTEXT {
   struct _SECURITY_CLIENT_CONTEXT ClientSecurityContext; // offset: 0x12c (300)
   VOID *LoggerExtension;                                 // offset: 0x168 (360)
   LONG ReleaseQueue;                                     // offset: 0x16c (364)
-  struct _TRACE_ENABLE_FLAG_EXTENSION
-      EnableFlagExtension;     // offset: 0x170 (368)
+  struct _TRACE_ENABLE_FLAG_EXTENSION EnableFlagExtension; // offset: 0x170
+                                                           //(368)
   ULONG LocalSequence;         // offset: 0x174 (372)
   ULONG MaximumIrql;           // offset: 0x178 (376)
   ULONG *EnableFlagArray;      // offset: 0x17c (380)
@@ -7381,8 +7381,8 @@ struct _ETHREAD {
     VOID *LpcReplyMessage;  // offset: 0x208 (520)
     VOID *LpcWaitingOnPort; // offset: 0x208 (520)
   };
-  struct _PS_IMPERSONATION_INFORMATION
-      *ImpersonationInfo;                // offset: 0x20c (524)
+  struct _PS_IMPERSONATION_INFORMATION *ImpersonationInfo; // offset: 0x20c
+                                                           //(524)
   struct _LIST_ENTRY IrpList;            // offset: 0x210 (528)
   ULONG TopLevelIrp;                     // offset: 0x218 (536)
   struct _DEVICE_OBJECT *DeviceToVerify; // offset: 0x21c (540)

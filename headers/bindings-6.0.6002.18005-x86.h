@@ -6402,9 +6402,9 @@ struct _PERFINFO_HARDPAGEFAULT_INFORMATION {
 
 // 0x30 (48) bytes
 struct _PF_HARD_FAULT_INFO {
-  struct _ETW_KERNEL_TRACE_TIMESTAMP KernelTimeStamp; // offset: 0x0 (0)
-  struct _PERFINFO_HARDPAGEFAULT_INFORMATION
-      HardFaultEvent;                 // offset: 0x10 (16)
+  struct _ETW_KERNEL_TRACE_TIMESTAMP KernelTimeStamp;        // offset: 0x0 (0)
+  struct _PERFINFO_HARDPAGEFAULT_INFORMATION HardFaultEvent; // offset: 0x10
+                                                             //(16)
   union _LARGE_INTEGER IoTimeInTicks; // offset: 0x28 (40)
 };
 
@@ -7436,17 +7436,17 @@ struct _ARBITER_QUERY_CONFLICT_PARAMETERS {
 // 0x10 (16) bytes
 struct _ARBITER_PARAMETERS {
   union {
-    struct _ARBITER_TEST_ALLOCATION_PARAMETERS
-        TestAllocation; // offset: 0x0 (0)
+    struct _ARBITER_TEST_ALLOCATION_PARAMETERS TestAllocation; // offset: 0x0
+                                                               //(0)
     struct _ARBITER_RETEST_ALLOCATION_PARAMETERS
         RetestAllocation; // offset: 0x0 (0)
-    struct _ARBITER_BOOT_ALLOCATION_PARAMETERS
-        BootAllocation; // offset: 0x0 (0)
+    struct _ARBITER_BOOT_ALLOCATION_PARAMETERS BootAllocation; // offset: 0x0
+                                                               //(0)
     struct _ARBITER_QUERY_ALLOCATED_RESOURCES_PARAMETERS
         QueryAllocatedResources;                             // offset: 0x0 (0)
     struct _ARBITER_QUERY_CONFLICT_PARAMETERS QueryConflict; // offset: 0x0 (0)
-    struct _ARBITER_QUERY_ARBITRATE_PARAMETERS
-        QueryArbitrate;                                  // offset: 0x0 (0)
+    struct _ARBITER_QUERY_ARBITRATE_PARAMETERS QueryArbitrate; // offset: 0x0
+                                                               //(0)
     struct _ARBITER_ADD_RESERVED_PARAMETERS AddReserved; // offset: 0x0 (0)
 
   } Parameters; // offset: 0x0 (0)
@@ -8546,8 +8546,8 @@ struct _WHEA_PCIXDEVICE_ERROR {
   struct _WHEA_PCIXDEVICE_ID IdInfo;                // offset: 0x10 (16)
   ULONG MemoryNumber;                               // offset: 0x20 (32)
   ULONG IoNumber;                                   // offset: 0x24 (36)
-  struct WHEA_PCIXDEVICE_REGISTER_PAIR
-      RegisterDataPairs[4]; // offset: 0x28 (40)
+  struct WHEA_PCIXDEVICE_REGISTER_PAIR RegisterDataPairs[4]; // offset: 0x28
+                                                             //(40)
 };
 
 // 0x8 (8) bytes
@@ -9411,8 +9411,8 @@ struct _PEB {
   VOID *AppCompatInfo;                                    // offset: 0x1ec (492)
   struct _UNICODE_STRING CSDVersion;                      // offset: 0x1f0 (496)
   struct _ACTIVATION_CONTEXT_DATA *ActivationContextData; // offset: 0x1f8 (504)
-  struct _ASSEMBLY_STORAGE_MAP
-      *ProcessAssemblyStorageMap; // offset: 0x1fc (508)
+  struct _ASSEMBLY_STORAGE_MAP *ProcessAssemblyStorageMap; // offset: 0x1fc
+                                                           //(508)
   struct _ACTIVATION_CONTEXT_DATA
       *SystemDefaultActivationContextData;                // offset: 0x200 (512)
   struct _ASSEMBLY_STORAGE_MAP *SystemAssemblyStorageMap; // offset: 0x204 (516)
@@ -10055,8 +10055,8 @@ struct _OBJECT_HANDLE_COUNT_DATABASE {
 // 0x8 (8) bytes
 struct _OBJECT_HEADER_HANDLE_INFO {
   union {
-    struct _OBJECT_HANDLE_COUNT_DATABASE
-        *HandleCountDataBase;                      // offset: 0x0 (0)
+    struct _OBJECT_HANDLE_COUNT_DATABASE *HandleCountDataBase; // offset: 0x0
+                                                               //(0)
     struct _OBJECT_HANDLE_COUNT_ENTRY SingleEntry; // offset: 0x0 (0)
   };
 };

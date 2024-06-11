@@ -7027,8 +7027,8 @@ struct _OPEN_PACKET {
   ULONG Options;                                    // offset: 0x38 (56)
   ULONG Disposition;                                // offset: 0x3c (60)
   struct _FILE_BASIC_INFORMATION *BasicInformation; // offset: 0x40 (64)
-  struct _FILE_NETWORK_OPEN_INFORMATION
-      *NetworkInformation;                              // offset: 0x44 (68)
+  struct _FILE_NETWORK_OPEN_INFORMATION *NetworkInformation; // offset: 0x44
+                                                             //(68)
   enum _CREATE_FILE_TYPE CreateFileType;                // offset: 0x48 (72)
   VOID *MailslotOrPipeParameters;                       // offset: 0x4c (76)
   UCHAR Override;                                       // offset: 0x50 (80)
@@ -8291,17 +8291,17 @@ struct _ARBITER_QUERY_CONFLICT_PARAMETERS {
 // 0x10 (16) bytes
 struct _ARBITER_PARAMETERS {
   union {
-    struct _ARBITER_TEST_ALLOCATION_PARAMETERS
-        TestAllocation; // offset: 0x0 (0)
+    struct _ARBITER_TEST_ALLOCATION_PARAMETERS TestAllocation; // offset: 0x0
+                                                               //(0)
     struct _ARBITER_RETEST_ALLOCATION_PARAMETERS
         RetestAllocation; // offset: 0x0 (0)
-    struct _ARBITER_BOOT_ALLOCATION_PARAMETERS
-        BootAllocation; // offset: 0x0 (0)
+    struct _ARBITER_BOOT_ALLOCATION_PARAMETERS BootAllocation; // offset: 0x0
+                                                               //(0)
     struct _ARBITER_QUERY_ALLOCATED_RESOURCES_PARAMETERS
         QueryAllocatedResources;                             // offset: 0x0 (0)
     struct _ARBITER_QUERY_CONFLICT_PARAMETERS QueryConflict; // offset: 0x0 (0)
-    struct _ARBITER_QUERY_ARBITRATE_PARAMETERS
-        QueryArbitrate;                                  // offset: 0x0 (0)
+    struct _ARBITER_QUERY_ARBITRATE_PARAMETERS QueryArbitrate; // offset: 0x0
+                                                               //(0)
     struct _ARBITER_ADD_RESERVED_PARAMETERS AddReserved; // offset: 0x0 (0)
 
   } Parameters; // offset: 0x0 (0)
@@ -9335,8 +9335,8 @@ struct _LOADER_PARAMETER_EXTENSION {
   struct _LIST_ENTRY AttachedHives;                       // offset: 0x88 (136)
   ULONG MemoryCachingRequirementsCount;                   // offset: 0x90 (144)
   VOID *MemoryCachingRequirements;                        // offset: 0x94 (148)
-  struct _TPM_BOOT_ENTROPY_LDR_RESULT
-      TpmBootEntropyResult;            // offset: 0x98 (152)
+  struct _TPM_BOOT_ENTROPY_LDR_RESULT TpmBootEntropyResult; // offset: 0x98
+                                                            //(152)
   ULONGLONG ProcessorCounterFrequency; // offset: 0xe0 (224)
 };
 
@@ -10479,7 +10479,7 @@ struct _KPRCB {
   ExAcqResSharedStarveExclusiveAcquiresExclusive;    // offset: 0x35c8 (13768)
   ULONG ExAcqResSharedStarveExclusiveAcquiresShared; // offset: 0x35cc (13772)
   ULONG ExAcqResSharedStarveExclusiveAcquiresSharedRecursive; // offset: 0x35d0
-                                                              // (13776)
+                                                              //(13776)
   ULONG ExAcqResSharedStarveExclusiveWaits;       // offset: 0x35d4 (13780)
   ULONG ExAcqResSharedStarveExclusiveNotAcquires; // offset: 0x35d8 (13784)
   ULONG ExAcqResSharedWaitForExclusiveAttempts;   // offset: 0x35dc (13788)
@@ -10487,7 +10487,7 @@ struct _KPRCB {
   ExAcqResSharedWaitForExclusiveAcquiresExclusive;    // offset: 0x35e0 (13792)
   ULONG ExAcqResSharedWaitForExclusiveAcquiresShared; // offset: 0x35e4 (13796)
   ULONG ExAcqResSharedWaitForExclusiveAcquiresSharedRecursive; // offset: 0x35e8
-                                                               // (13800)
+                                                               //(13800)
   ULONG ExAcqResSharedWaitForExclusiveWaits;           // offset: 0x35ec (13804)
   ULONG ExAcqResSharedWaitForExclusiveNotAcquires;     // offset: 0x35f0 (13808)
   ULONG ExSetResOwnerPointerExclusive;                 // offset: 0x35f4 (13812)
@@ -10960,8 +10960,8 @@ struct _PEB {
   VOID *AppCompatInfo;                                    // offset: 0x1ec (492)
   struct _UNICODE_STRING CSDVersion;                      // offset: 0x1f0 (496)
   struct _ACTIVATION_CONTEXT_DATA *ActivationContextData; // offset: 0x1f8 (504)
-  struct _ASSEMBLY_STORAGE_MAP
-      *ProcessAssemblyStorageMap; // offset: 0x1fc (508)
+  struct _ASSEMBLY_STORAGE_MAP *ProcessAssemblyStorageMap; // offset: 0x1fc
+                                                           //(508)
   struct _ACTIVATION_CONTEXT_DATA
       *SystemDefaultActivationContextData;                // offset: 0x200 (512)
   struct _ASSEMBLY_STORAGE_MAP *SystemAssemblyStorageMap; // offset: 0x204 (516)
@@ -11274,8 +11274,8 @@ struct _OBJECT_HANDLE_COUNT_DATABASE {
 // 0x8 (8) bytes
 struct _OBJECT_HEADER_HANDLE_INFO {
   union {
-    struct _OBJECT_HANDLE_COUNT_DATABASE
-        *HandleCountDataBase;                      // offset: 0x0 (0)
+    struct _OBJECT_HANDLE_COUNT_DATABASE *HandleCountDataBase; // offset: 0x0
+                                                               //(0)
     struct _OBJECT_HANDLE_COUNT_ENTRY SingleEntry; // offset: 0x0 (0)
   };
 };

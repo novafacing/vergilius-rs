@@ -9,6 +9,7 @@ homepage = "https://github.com/novafacing/vergilius-rs"
 repository = "https://github.com/novafacing/vergilius-rs"
 license = "Apache-2.0"
 keywords = ["windows", "internals"]
+exclude = ["/headers"]
 
 [[bin]]
 name = "generate-headers"

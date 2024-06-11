@@ -2578,8 +2578,8 @@ struct _OBJECT_HANDLE_COUNT_DATABASE {
 // 0x8 (8) bytes
 struct _OBJECT_HEADER_HANDLE_INFO {
   union {
-    struct _OBJECT_HANDLE_COUNT_DATABASE
-        *HandleCountDataBase;                      // offset: 0x0 (0)
+    struct _OBJECT_HANDLE_COUNT_DATABASE *HandleCountDataBase; // offset: 0x0
+                                                               // (0)
     struct _OBJECT_HANDLE_COUNT_ENTRY SingleEntry; // offset: 0x0 (0)
   };
 };
@@ -6905,8 +6905,8 @@ struct _PEB {
   VOID *AppCompatInfo;                                    // offset: 0x1ec (492)
   struct _UNICODE_STRING CSDVersion;                      // offset: 0x1f0 (496)
   struct _ACTIVATION_CONTEXT_DATA *ActivationContextData; // offset: 0x1f8 (504)
-  struct _ASSEMBLY_STORAGE_MAP
-      *ProcessAssemblyStorageMap; // offset: 0x1fc (508)
+  struct _ASSEMBLY_STORAGE_MAP *ProcessAssemblyStorageMap; // offset: 0x1fc
+                                                           // (508)
   struct _ACTIVATION_CONTEXT_DATA
       *SystemDefaultActivationContextData;                // offset: 0x200 (512)
   struct _ASSEMBLY_STORAGE_MAP *SystemAssemblyStorageMap; // offset: 0x204 (516)
@@ -7226,8 +7226,8 @@ struct _ETHREAD {
     VOID *LpcReplyMessage;  // offset: 0x200 (512)
     VOID *LpcWaitingOnPort; // offset: 0x200 (512)
   };
-  struct _PS_IMPERSONATION_INFORMATION
-      *ImpersonationInfo;                // offset: 0x204 (516)
+  struct _PS_IMPERSONATION_INFORMATION *ImpersonationInfo; // offset: 0x204
+                                                           // (516)
   struct _LIST_ENTRY IrpList;            // offset: 0x208 (520)
   ULONG TopLevelIrp;                     // offset: 0x210 (528)
   struct _DEVICE_OBJECT *DeviceToVerify; // offset: 0x214 (532)
@@ -7396,8 +7396,8 @@ struct _WMI_LOGGER_CONTEXT {
   struct _SECURITY_CLIENT_CONTEXT ClientSecurityContext; // offset: 0x13c (316)
   VOID *LoggerExtension;                                 // offset: 0x178 (376)
   LONG ReleaseQueue;                                     // offset: 0x17c (380)
-  struct _TRACE_ENABLE_FLAG_EXTENSION
-      EnableFlagExtension;     // offset: 0x180 (384)
+  struct _TRACE_ENABLE_FLAG_EXTENSION EnableFlagExtension; // offset: 0x180
+                                                           // (384)
   ULONG LocalSequence;         // offset: 0x184 (388)
   ULONG MaximumIrql;           // offset: 0x188 (392)
   ULONG *EnableFlagArray;      // offset: 0x18c (396)

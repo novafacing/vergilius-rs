@@ -8,6 +8,10 @@
 //! use vergilius::bindings::windows::*;
 //! ```
 
+#![allow(non_upper_case_globals)]
+#![allow(non_camel_case_types)]
+#![allow(non_snake_case)]
+
 pub mod windows_10_0_10240_16384_x64;
 pub mod windows_10_0_10240_16384_x86;
 pub mod windows_10_0_10586_0_x64;
@@ -36,26 +40,7 @@ pub mod windows_10_0_19041_928_x64;
 pub mod windows_10_0_19041_928_x86;
 pub mod windows_10_0_19045_2965_x64;
 pub mod windows_10_0_19045_2965_x86;
-pub mod windows_10_0_22000_194_x64;
 pub mod windows_10_0_22000_1_x64;
+pub mod windows_10_0_22000_194_x64;
 pub mod windows_10_0_22621_382_x64;
 pub mod windows_10_0_22631_2428_x64;
-pub mod windows_5_1_2600_5512_x86;
-pub mod windows_5_2_3790_3959_x64;
-pub mod windows_5_2_3790_3959_x86;
-pub mod windows_6_0_6000_16386_x64;
-pub mod windows_6_0_6000_16386_x86;
-pub mod windows_6_0_6001_18000_x64;
-pub mod windows_6_0_6001_18000_x86;
-pub mod windows_6_0_6002_18005_x64;
-pub mod windows_6_0_6002_18005_x86;
-pub mod windows_6_1_7600_16385_x64;
-pub mod windows_6_1_7600_16385_x86;
-pub mod windows_6_1_7601_17514_x64;
-pub mod windows_6_1_7601_17514_x86;
-pub mod windows_6_2_9200_16384_x64;
-pub mod windows_6_2_9200_16384_x86;
-pub mod windows_6_3_9600_16384_x64;
-pub mod windows_6_3_9600_16384_x86;
-pub mod windows_6_3_9600_17415_x64;
-pub mod windows_6_3_9600_17415_x86;
