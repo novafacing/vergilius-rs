@@ -8283,7 +8283,10 @@ struct _CM_DIRTY_VECTOR_LOG_ENTRY {
   VOID *Stack[6]; // offset: 0x10 (16)
 };
 
-typedef enum KTMOH_CommitTransaction_Result {} KTMOH_CommitTransaction_Result;
+enum KTMOH_CommitTransaction_Result {
+  KTMOH_CommitTransaction_Result = 1,
+  KTMOH_RollbackTransaction_Result = 2
+};
 
 // 0x8 (8) bytes
 struct _KTRANSACTION_HISTORY {

@@ -1,10 +1,10 @@
 use anyhow::{anyhow, Result};
 use bindgen::{Builder, FieldVisibilityKind, AliasVariation, EnumVariation, MacroTypeVariation, NonCopyUnionStyle};
 use cargo_metadata::MetadataCommand;
-use indoc::indoc;
-use std::fs::read_dir;
+use indoc::formatdoc;
+use std::fs::{write, read_dir, create_dir_all};
 
-fn generate_bindings() -> Result<()> {
+pub fn generate_bindings() -> Result<()> {
     let metadata = MetadataCommand::new().no_deps().exec()?;
 
     let package = metadata
@@ -20,6 +20,8 @@ fn generate_bindings() -> Result<()> {
         .join("src")
         .into_std_path_buf();
 
+    let bindings_out_dir = out_dir.join("bindings");
+
     let headers_dir = package
         .manifest_path
         .parent()
@@ -34,9 +36,26 @@ fn generate_bindings() -> Result<()> {
         .map(|entry| entry.path())
         .collect::<Vec<_>>();
 
+    if !headers_dir.exists() {
+        create_dir_all(&headers_dir)?;
+    }
+
+    if !bindings_out_dir.exists() {
+        create_dir_all(&bindings_out_dir)?;
+    }
+
+    let mut modules = Vec::new();
+
     for bindings_file in bindings_files {
-        let out_file = out_dir
-            .join(bindings_file.file_stem().unwrap().to_string_lossy().replace(".", "_").replace("-", "_"))
+        let file_name = bindings_file.file_stem()
+            .unwrap()
+            .to_string_lossy()
+            .replace(".", "_")
+            .replace("-", "_")
+            .replace("bindings", "windows");
+
+        let out_file = bindings_out_dir
+            .join(&file_name)
             .with_extension("rs");
 
         let bindings = Builder::default()
@@ -63,7 +82,32 @@ fn generate_bindings() -> Result<()> {
             .generate()?;
 
         bindings.write_to_file(out_file)?;
+        modules.push(file_name);
     }
+
+    let bindings_rs = modules.iter().map(|module| {
+        format!("pub mod {};", module)
+    }).collect::<Vec<_>>().join("\n");
+
+    let bindings_rs_file = out_dir.join("bindings.rs");
+
+    write(bindings_rs_file, formatdoc! {"
+        //! Bindings to Windows API
+        //!
+        //! This module contains bindings to Windows API.
+        //!
+        //! # Examples
+        //!
+        //! ```no_run
+        //! use vergilius::bindings::windows::*;
+        //! ```
+        
+        #![allow(non_upper_case_globals)]
+        #![allow(non_camel_case_types)]
+        #![allow(non_snake_case)]
+        
+        {}
+    ", bindings_rs})?;
 
     Ok(())
 }
