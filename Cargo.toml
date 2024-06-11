@@ -3,6 +3,15 @@ name = "vergilius"
 version = "0.1.0"
 edition = "2021"
 
+[[bin]]
+name = "generate-headers"
+path = "src/bin/generate-headers.rs"
+required-features = ["generate"]
+
+[[bin]]
+name = "generate-bindings"
+required-features = ["generate"]
+
 [dependencies]
 anyhow = { version = "*", optional = true }
 bindgen = { version = "*", optional = true }
@@ -16,6 +25,7 @@ serde_yaml = { version = "*", optional = true }
 zip = { version = "*", optional = true }
 
 [features]
+default = []
 generate = [
     "dep:anyhow",
     "dep:bindgen",
@@ -28,4 +38,3 @@ generate = [
     "dep:serde_yaml",
     "dep:zip",
 ]
-default = ["generate"]

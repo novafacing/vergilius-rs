@@ -1,26 +1,18 @@
 #include <stdint.h>
 
 // 0x0 (0) bytes
-struct _ADAPTER_OBJECT
-
-{};
+struct _ADAPTER_OBJECT {};
 
 // 0x0 (0) bytes
-struct _ACTIVATION_CONTEXT_DATA
-
-{};
+struct _ACTIVATION_CONTEXT_DATA {};
 
 // 0x0 (0) bytes
-struct _HEAP_LOCAL_SEGMENT_INFO
-
-{};
+struct _HEAP_LOCAL_SEGMENT_INFO {};
 
 typedef int8_t CHAR;
 
 // 0x0 (0) bytes
-struct _KTMNOTIFICATION_PACKET
-
-{};
+struct _KTMNOTIFICATION_PACKET {};
 
 typedef int16_t SHORT;
 
@@ -73,49 +65,31 @@ struct _MMSECTION_FLAGS {
 };
 
 // 0x0 (0) bytes
-struct _SMBIOS_TABLE_HEADER
-
-{};
+struct _SMBIOS_TABLE_HEADER {};
 
 // 0x0 (0) bytes
-struct _SETUP_LOADER_BLOCK
-
-{};
+struct _SETUP_LOADER_BLOCK {};
 
 // 0x0 (0) bytes
-struct _ECP_LIST
-
-{};
+struct _ECP_LIST {};
 
 // 0x0 (0) bytes
-struct _SCSI_REQUEST_BLOCK
-
-{};
+struct _SCSI_REQUEST_BLOCK {};
 
 // 0x0 (0) bytes
-struct _FLS_CALLBACK_INFO
-
-{};
+struct _FLS_CALLBACK_INFO {};
 
 // 0x0 (0) bytes
-struct _ASSEMBLY_STORAGE_MAP
-
-{};
+struct _ASSEMBLY_STORAGE_MAP {};
 
 // 0x0 (0) bytes
-struct _JOB_ACCESS_STATE
-
-{};
+struct _JOB_ACCESS_STATE {};
 
 // 0x0 (0) bytes
-struct _PAGEFAULT_HISTORY
-
-{};
+struct _PAGEFAULT_HISTORY {};
 
 // 0x0 (0) bytes
-struct _EPROCESS_QUOTA_BLOCK
-
-{};
+struct _EPROCESS_QUOTA_BLOCK {};
 
 typedef uint16_t WCHAR;
 
@@ -2004,24 +1978,16 @@ struct _KDPC {
 };
 
 // 0x0 (0) bytes
-struct _TP_CALLBACK_INSTANCE
-
-{};
+struct _TP_CALLBACK_INSTANCE {};
 
 // 0x0 (0) bytes
-struct _ACTIVATION_CONTEXT
-
-{};
+struct _ACTIVATION_CONTEXT {};
 
 // 0x0 (0) bytes
-struct _TP_CLEANUP_GROUP
-
-{};
+struct _TP_CLEANUP_GROUP {};
 
 // 0x0 (0) bytes
-struct _TP_POOL
-
-{};
+struct _TP_POOL {};
 
 // 0x8 (8) bytes
 struct _TP_TASK_CALLBACKS {

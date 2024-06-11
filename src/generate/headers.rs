@@ -336,9 +336,7 @@ impl Builder {
             xwrite!(fb.ty, "}}");
             *indent -= 1;
         } else {
-            xwriteln!(fb.ty);
             xwrite!(fb.ty, "{{");
-            xwriteln!(fb.ty);
             xwrite!(fb.ty, "}}");
         }
     }

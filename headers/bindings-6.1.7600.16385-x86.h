@@ -1,14 +1,10 @@
 #include <stdint.h>
 
 // 0x0 (0) bytes
-struct _ADAPTER_OBJECT
-
-{};
+struct _ADAPTER_OBJECT {};
 
 // 0x0 (0) bytes
-struct _VERIFIER_SHARED_EXPORT_THUNK
-
-{};
+struct _VERIFIER_SHARED_EXPORT_THUNK {};
 
 // 0xc (12) bytes
 struct _VF_TARGET_ALL_SHARED_EXPORT_THUNKS {
@@ -20,41 +16,27 @@ struct _VF_TARGET_ALL_SHARED_EXPORT_THUNKS {
 };
 
 // 0x0 (0) bytes
-struct _CALLBACK_OBJECT
-
-{};
+struct _CALLBACK_OBJECT {};
 
 // 0x0 (0) bytes
-struct _HEAP_LOCAL_SEGMENT_INFO
-
-{};
+struct _HEAP_LOCAL_SEGMENT_INFO {};
 
 // 0x0 (0) bytes
-struct _ACTIVATION_CONTEXT_DATA
-
-{};
+struct _ACTIVATION_CONTEXT_DATA {};
 
 typedef void VOID;
 
 // 0x0 (0) bytes
-struct _PCW_INSTANCE
-
-{};
+struct _PCW_INSTANCE {};
 
 // 0x0 (0) bytes
-struct _PCW_BUFFER
-
-{};
+struct _PCW_BUFFER {};
 
 // 0x0 (0) bytes
-struct _PCW_REGISTRATION
-
-{};
+struct _PCW_REGISTRATION {};
 
 // 0x0 (0) bytes
-struct _KTMNOTIFICATION_PACKET
-
-{};
+struct _KTMNOTIFICATION_PACKET {};
 
 typedef int64_t LONGLONG;
 
@@ -107,29 +89,19 @@ struct _MMSECTION_FLAGS {
 typedef int16_t SHORT;
 
 // 0x0 (0) bytes
-struct _SMBIOS_TABLE_HEADER
-
-{};
+struct _SMBIOS_TABLE_HEADER {};
 
 // 0x0 (0) bytes
-struct _SCSI_REQUEST_BLOCK
-
-{};
+struct _SCSI_REQUEST_BLOCK {};
 
 // 0x0 (0) bytes
-struct _JOB_ACCESS_STATE
-
-{};
+struct _JOB_ACCESS_STATE {};
 
 // 0x0 (0) bytes
-struct _PAGEFAULT_HISTORY
-
-{};
+struct _PAGEFAULT_HISTORY {};
 
 // 0x0 (0) bytes
-struct _EPROCESS_QUOTA_BLOCK
-
-{};
+struct _EPROCESS_QUOTA_BLOCK {};
 
 // 0x4 (4) bytes
 struct _ARBITER_ADD_RESERVED_PARAMETERS {
@@ -163,14 +135,10 @@ struct _SINGLE_LIST_ENTRY {
 typedef int8_t CHAR;
 
 // 0x0 (0) bytes
-struct _FLS_CALLBACK_INFO
-
-{};
+struct _FLS_CALLBACK_INFO {};
 
 // 0x0 (0) bytes
-struct _ASSEMBLY_STORAGE_MAP
-
-{};
+struct _ASSEMBLY_STORAGE_MAP {};
 
 // 0x4 (4) bytes
 struct _ARBITER_QUERY_ARBITRATE_PARAMETERS {
@@ -246,7 +214,7 @@ struct _IO_TIMER {
   SHORT Type;                   // offset: 0x0 (0)
   SHORT TimerFlag;              // offset: 0x2 (2)
   struct _LIST_ENTRY TimerList; // offset: 0x4 (4)
-  VOID (*TimerRoutine)
+  VOID(*TimerRoutine)
   (struct _DEVICE_OBJECT *arg1, VOID *arg2); // offset: 0xc (12)
   VOID *Context;                             // offset: 0x10 (16)
   struct _DEVICE_OBJECT *DeviceObject;       // offset: 0x14 (20)
@@ -292,24 +260,16 @@ struct _TP_NBQ_GUARD {
 };
 
 // 0x0 (0) bytes
-struct _TP_CALLBACK_INSTANCE
-
-{};
+struct _TP_CALLBACK_INSTANCE {};
 
 // 0x0 (0) bytes
-struct _ACTIVATION_CONTEXT
-
-{};
+struct _ACTIVATION_CONTEXT {};
 
 // 0x0 (0) bytes
-struct _TP_CLEANUP_GROUP
-
-{};
+struct _TP_CLEANUP_GROUP {};
 
 // 0x0 (0) bytes
-struct _TP_POOL
-
-{};
+struct _TP_POOL {};
 
 // 0x4 (4) bytes
 enum _FILE_OBJECT_EXTENSION_TYPE {
@@ -2150,7 +2110,7 @@ struct _KDPC {
   UCHAR Importance;                // offset: 0x1 (1)
   volatile USHORT Number;          // offset: 0x2 (2)
   struct _LIST_ENTRY DpcListEntry; // offset: 0x4 (4)
-  VOID (*DeferredRoutine)
+  VOID(*DeferredRoutine)
   (struct _KDPC *arg1, VOID *arg2, VOID *arg3, VOID *arg4); // offset: 0xc (12)
   VOID *DeferredContext;                                    // offset: 0x10 (16)
   VOID *SystemArgument1;                                    // offset: 0x14 (20)
@@ -2939,7 +2899,7 @@ struct _HEAP_DEBUGGING_INFORMATION {
   ULONG StackTraceDepth;     // offset: 0xc (12)
   ULONG MinTotalBlockSize;   // offset: 0x10 (16)
   ULONG MaxTotalBlockSize;   // offset: 0x14 (20)
-  LONG (*HeapLeakEnumerationRoutine)
+  LONG(*HeapLeakEnumerationRoutine)
   (LONG arg1, VOID *arg2, VOID *arg3, ULONG arg4, ULONG arg5,
    VOID *arg6); // offset: 0x18 (24)
 };
@@ -3152,7 +3112,7 @@ struct _HEAP_STOP_ON_VALUES {
 // 0x20 (32) bytes
 struct _IO_WORKITEM {
   struct _WORK_QUEUE_ITEM WorkItem; // offset: 0x0 (0)
-  VOID (*Routine)
+  VOID(*Routine)
   (VOID *arg1, VOID *arg2, struct _IO_WORKITEM *arg3); // offset: 0x10 (16)
   VOID *IoObject;                                      // offset: 0x14 (20)
   VOID *Context;                                       // offset: 0x18 (24)
@@ -3373,7 +3333,7 @@ struct _IO_MINI_COMPLETION_PACKET_USER {
   VOID *ApcContext;             // offset: 0x10 (16)
   LONG IoStatus;                // offset: 0x14 (20)
   ULONG IoStatusInformation;    // offset: 0x18 (24)
-  VOID (*MiniPacketCallback)
+  VOID(*MiniPacketCallback)
   (struct _IO_MINI_COMPLETION_PACKET_USER *arg1,
    VOID *arg2);    // offset: 0x1c (28)
   VOID *Context;   // offset: 0x20 (32)
@@ -3405,6 +3365,13 @@ struct _ALPC_MESSAGE_ZONE {
   ULONG Size;        // offset: 0x14 (20)
 };
 
+// 0xc (12) bytes
+struct _ALPC_COMPLETION_PACKET_LOOKASIDE_ENTRY {
+  struct _SINGLE_LIST_ENTRY ListEntry;                 // offset: 0x0 (0)
+  struct _IO_MINI_COMPLETION_PACKET_USER *Packet;      // offset: 0x4 (4)
+  struct _ALPC_COMPLETION_PACKET_LOOKASIDE *Lookaside; // offset: 0x8 (8)
+};
+
 // 0x30 (48) bytes
 struct _ALPC_COMPLETION_PACKET_LOOKASIDE {
   ULONG Lock;                                              // offset: 0x0 (0)
@@ -3417,13 +3384,6 @@ struct _ALPC_COMPLETION_PACKET_LOOKASIDE {
   VOID *CompletionPort;                                    // offset: 0x1c (28)
   VOID *CompletionKey;                                     // offset: 0x20 (32)
   struct _ALPC_COMPLETION_PACKET_LOOKASIDE_ENTRY Entry[1]; // offset: 0x24 (36)
-};
-
-// 0xc (12) bytes
-struct _ALPC_COMPLETION_PACKET_LOOKASIDE_ENTRY {
-  struct _SINGLE_LIST_ENTRY ListEntry;                 // offset: 0x0 (0)
-  struct _IO_MINI_COMPLETION_PACKET_USER *Packet;      // offset: 0x4 (4)
-  struct _ALPC_COMPLETION_PACKET_LOOKASIDE *Lookaside; // offset: 0x8 (8)
 };
 
 // 0x24 (36) bytes
@@ -3811,7 +3771,7 @@ struct DOCK_INTERFACE {
   VOID *Context;                            // offset: 0x4 (4)
   VOID (*InterfaceReference)(VOID *arg1);   // offset: 0x8 (8)
   VOID (*InterfaceDereference)(VOID *arg1); // offset: 0xc (12)
-  ULONG (*ProfileDepartureSetMode)
+  ULONG(*ProfileDepartureSetMode)
   (VOID *arg1, enum PROFILE_DEPARTURE_STYLE arg2); // offset: 0x10 (16)
   ULONG (*ProfileDepartureUpdate)(VOID *arg1);     // offset: 0x14 (20)
 };
@@ -3973,7 +3933,7 @@ struct _RTL_AVL_TABLE {
       struct _RTL_AVL_TABLE *arg1, VOID *arg2, VOID *arg3); // offset: 0x28 (40)
   VOID *(*AllocateRoutine)(struct _RTL_AVL_TABLE *arg1,
                            ULONG arg2); // offset: 0x2c (44)
-  VOID (*FreeRoutine)
+  VOID(*FreeRoutine)
   (struct _RTL_AVL_TABLE *arg1, VOID *arg2); // offset: 0x30 (48)
   VOID *TableContext;                        // offset: 0x34 (52)
 };
@@ -4940,7 +4900,7 @@ struct _MMBANKED_SECTION {
   struct _MMPTE *BasedPte; // offset: 0x4 (4)
   ULONG BankSize;          // offset: 0x8 (8)
   ULONG BankShift;         // offset: 0xc (12)
-  VOID (*BankedRoutine)
+  VOID(*BankedRoutine)
   (ULONG arg1, ULONG arg2, VOID *arg3); // offset: 0x10 (16)
   VOID *Context;                        // offset: 0x14 (20)
   struct _MMPTE *CurrentMappedPte;      // offset: 0x18 (24)
@@ -5556,11 +5516,11 @@ struct _KAPC {
   ULONG SpareLong0;                // offset: 0x4 (4)
   struct _KTHREAD *Thread;         // offset: 0x8 (8)
   struct _LIST_ENTRY ApcListEntry; // offset: 0xc (12)
-  VOID (*KernelRoutine)
+  VOID(*KernelRoutine)
   (struct _KAPC *arg1, VOID (**arg2)(VOID *arg1, VOID *arg2, VOID *arg3),
    VOID **arg3, VOID **arg4, VOID **arg5);    // offset: 0x14 (20)
   VOID (*RundownRoutine)(struct _KAPC *arg1); // offset: 0x18 (24)
-  VOID (*NormalRoutine)
+  VOID(*NormalRoutine)
   (VOID *arg1, VOID *arg2, VOID *arg3); // offset: 0x1c (28)
   VOID *NormalContext;                  // offset: 0x20 (32)
   VOID *SystemArgument1;                // offset: 0x24 (36)
@@ -6326,7 +6286,7 @@ struct _NT_TIB {
 
 // 0xc (12) bytes
 struct _TP_DIRECT {
-  VOID (*Callback)
+  VOID(*Callback)
   (struct _TP_CALLBACK_INSTANCE *arg1, struct _TP_DIRECT *arg2, VOID *arg3,
    struct _IO_STATUS_BLOCK *arg4); // offset: 0x0 (0)
   ULONG NumaNode;                  // offset: 0x4 (4)
@@ -6344,10 +6304,10 @@ struct _TP_TASK {
 
 // 0x8 (8) bytes
 struct _TP_TASK_CALLBACKS {
-  VOID (*ExecuteCallback)
+  VOID(*ExecuteCallback)
   (struct _TP_CALLBACK_INSTANCE *arg1,
    struct _TP_TASK *arg2); // offset: 0x0 (0)
-  VOID (*Unposted)
+  VOID(*Unposted)
   (struct _TP_TASK *arg1, struct _TP_POOL *arg2); // offset: 0x4 (4)
 };
 
@@ -6356,11 +6316,11 @@ struct _TP_CALLBACK_ENVIRON_V3 {
   ULONG Version;                          // offset: 0x0 (0)
   struct _TP_POOL *Pool;                  // offset: 0x4 (4)
   struct _TP_CLEANUP_GROUP *CleanupGroup; // offset: 0x8 (8)
-  VOID (*CleanupGroupCancelCallback)
+  VOID(*CleanupGroupCancelCallback)
   (VOID *arg1, VOID *arg2);                      // offset: 0xc (12)
   VOID *RaceDll;                                 // offset: 0x10 (16)
   struct _ACTIVATION_CONTEXT *ActivationContext; // offset: 0x14 (20)
-  VOID (*FinalizationCallback)
+  VOID(*FinalizationCallback)
   (struct _TP_CALLBACK_INSTANCE *arg1, VOID *arg2); // offset: 0x18 (24)
   union {
     ULONG Flags; // offset: 0x1c (28)
@@ -6618,7 +6578,7 @@ struct _SHARED_CACHE_MAP {
   VOID *LazyWriteContext;                     // offset: 0x8c (140)
   struct _LIST_ENTRY PrivateList;             // offset: 0x90 (144)
   VOID *LogHandle;                            // offset: 0x98 (152)
-  VOID (*FlushToLsnRoutine)
+  VOID(*FlushToLsnRoutine)
   (VOID *arg1, union _LARGE_INTEGER arg2);             // offset: 0x9c (156)
   ULONG DirtyPageThreshold;                            // offset: 0xa0 (160)
   ULONG LazyWritePassCount;                            // offset: 0xa4 (164)
@@ -7088,7 +7048,7 @@ struct _DUMP_INITIALIZATION_CONTEXT {
   union _LARGE_INTEGER PhysicalAddress[2];         // offset: 0x18 (24)
   VOID (*StallRoutine)(ULONG arg1);                // offset: 0x28 (40)
   UCHAR (*OpenRoutine)(union _LARGE_INTEGER arg1); // offset: 0x2c (44)
-  LONG (*WriteRoutine)
+  LONG(*WriteRoutine)
   (union _LARGE_INTEGER *arg1, struct _MDL *arg2); // offset: 0x30 (48)
   VOID (*FinishRoutine)();                         // offset: 0x34 (52)
   struct _ADAPTER_OBJECT *AdapterObject;           // offset: 0x38 (56)
@@ -7098,7 +7058,7 @@ struct _DUMP_INITIALIZATION_CONTEXT {
   ULONG MaximumTransferSize;                       // offset: 0x48 (72)
   ULONG CommonBufferSize;                          // offset: 0x4c (76)
   VOID *TargetAddress;                             // offset: 0x50 (80)
-  LONG (*WritePendingRoutine)
+  LONG(*WritePendingRoutine)
   (LONG arg1, union _LARGE_INTEGER *arg2, struct _MDL *arg3,
    VOID *arg4);         // offset: 0x54 (84)
   ULONG PartitionStyle; // offset: 0x58 (88)
@@ -7170,34 +7130,34 @@ struct _FS_FILTER_CALLBACK_DATA {
 struct _FS_FILTER_CALLBACKS {
   ULONG SizeOfFsFilterCallbacks; // offset: 0x0 (0)
   ULONG Reserved;                // offset: 0x4 (4)
-  LONG (*PreAcquireForSectionSynchronization)
+  LONG(*PreAcquireForSectionSynchronization)
   (struct _FS_FILTER_CALLBACK_DATA *arg1, VOID **arg2); // offset: 0x8 (8)
-  VOID (*PostAcquireForSectionSynchronization)
+  VOID(*PostAcquireForSectionSynchronization)
   (struct _FS_FILTER_CALLBACK_DATA *arg1, LONG arg2,
    VOID *arg3); // offset: 0xc (12)
-  LONG (*PreReleaseForSectionSynchronization)
+  LONG(*PreReleaseForSectionSynchronization)
   (struct _FS_FILTER_CALLBACK_DATA *arg1, VOID **arg2); // offset: 0x10 (16)
-  VOID (*PostReleaseForSectionSynchronization)
+  VOID(*PostReleaseForSectionSynchronization)
   (struct _FS_FILTER_CALLBACK_DATA *arg1, LONG arg2,
    VOID *arg3); // offset: 0x14 (20)
-  LONG (*PreAcquireForCcFlush)
+  LONG(*PreAcquireForCcFlush)
   (struct _FS_FILTER_CALLBACK_DATA *arg1, VOID **arg2); // offset: 0x18 (24)
-  VOID (*PostAcquireForCcFlush)
+  VOID(*PostAcquireForCcFlush)
   (struct _FS_FILTER_CALLBACK_DATA *arg1, LONG arg2,
    VOID *arg3); // offset: 0x1c (28)
-  LONG (*PreReleaseForCcFlush)
+  LONG(*PreReleaseForCcFlush)
   (struct _FS_FILTER_CALLBACK_DATA *arg1, VOID **arg2); // offset: 0x20 (32)
-  VOID (*PostReleaseForCcFlush)
+  VOID(*PostReleaseForCcFlush)
   (struct _FS_FILTER_CALLBACK_DATA *arg1, LONG arg2,
    VOID *arg3); // offset: 0x24 (36)
-  LONG (*PreAcquireForModifiedPageWriter)
+  LONG(*PreAcquireForModifiedPageWriter)
   (struct _FS_FILTER_CALLBACK_DATA *arg1, VOID **arg2); // offset: 0x28 (40)
-  VOID (*PostAcquireForModifiedPageWriter)
+  VOID(*PostAcquireForModifiedPageWriter)
   (struct _FS_FILTER_CALLBACK_DATA *arg1, LONG arg2,
    VOID *arg3); // offset: 0x2c (44)
-  LONG (*PreReleaseForModifiedPageWriter)
+  LONG(*PreReleaseForModifiedPageWriter)
   (struct _FS_FILTER_CALLBACK_DATA *arg1, VOID **arg2); // offset: 0x30 (48)
-  VOID (*PostReleaseForModifiedPageWriter)
+  VOID(*PostReleaseForModifiedPageWriter)
   (struct _FS_FILTER_CALLBACK_DATA *arg1, LONG arg2,
    VOID *arg3); // offset: 0x34 (52)
 };
@@ -7334,20 +7294,20 @@ struct _HHIVE {
   ULONG Signature; // offset: 0x0 (0)
   struct _CELL_DATA *(*GetCellRoutine)(struct _HHIVE *arg1,
                                        ULONG arg2); // offset: 0x4 (4)
-  VOID (*ReleaseCellRoutine)
+  VOID(*ReleaseCellRoutine)
   (struct _HHIVE *arg1, ULONG arg2);                     // offset: 0x8 (8)
   VOID *(*Allocate)(ULONG arg1, UCHAR arg2, ULONG arg3); // offset: 0xc (12)
   VOID (*Free)(VOID *arg1, ULONG arg2);                  // offset: 0x10 (16)
-  UCHAR (*FileSetSize)
+  UCHAR(*FileSetSize)
   (struct _HHIVE *arg1, ULONG arg2, ULONG arg3,
    ULONG arg4); // offset: 0x14 (20)
-  UCHAR (*FileWrite)
+  UCHAR(*FileWrite)
   (struct _HHIVE *arg1, ULONG arg2, struct CMP_OFFSET_ARRAY *arg3, ULONG arg4,
    ULONG *arg5); // offset: 0x18 (24)
-  UCHAR (*FileRead)
+  UCHAR(*FileRead)
   (struct _HHIVE *arg1, ULONG arg2, ULONG *arg3, VOID *arg4,
    ULONG arg5); // offset: 0x1c (28)
-  UCHAR (*FileFlush)
+  UCHAR(*FileFlush)
   (struct _HHIVE *arg1, ULONG arg2, union _LARGE_INTEGER *arg3,
    ULONG arg4);                   // offset: 0x20 (32)
   VOID *HiveLoadFailure;          // offset: 0x24 (36)
@@ -7589,7 +7549,7 @@ struct _IO_STACK_LOCATION {
   } Parameters;                        // offset: 0x4 (4)
   struct _DEVICE_OBJECT *DeviceObject; // offset: 0x14 (20)
   struct _FILE_OBJECT *FileObject;     // offset: 0x18 (24)
-  LONG (*CompletionRoutine)
+  LONG(*CompletionRoutine)
   (struct _DEVICE_OBJECT *arg1, struct _IRP *arg2,
    VOID *arg3);  // offset: 0x1c (28)
   VOID *Context; // offset: 0x20 (32)
@@ -7622,7 +7582,7 @@ struct _IRP {
   union {
     struct {
       union {
-        VOID (*UserApcRoutine)
+        VOID(*UserApcRoutine)
         (VOID *arg1, struct _IO_STATUS_BLOCK *arg2,
          ULONG arg3);         // offset: 0x0 (0)
         VOID *IssuingProcess; // offset: 0x0 (0)
@@ -7632,7 +7592,7 @@ struct _IRP {
     union _LARGE_INTEGER AllocationSize; // offset: 0x30 (48)
 
   } Overlay; // offset: 0x30 (48)
-  VOID (*CancelRoutine)
+  VOID(*CancelRoutine)
   (struct _DEVICE_OBJECT *arg1, struct _IRP *arg2); // offset: 0x38 (56)
   VOID *UserBuffer;                                 // offset: 0x3c (60)
   union {
@@ -8353,7 +8313,7 @@ struct _ARBITER_INTERFACE {
   VOID *Context;                            // offset: 0x4 (4)
   VOID (*InterfaceReference)(VOID *arg1);   // offset: 0x8 (8)
   VOID (*InterfaceDereference)(VOID *arg1); // offset: 0xc (12)
-  LONG (*ArbiterHandler)
+  LONG(*ArbiterHandler)
   (VOID *arg1, enum _ARBITER_ACTION arg2,
    struct _ARBITER_PARAMETERS *arg3); // offset: 0x10 (16)
   ULONG Flags;                        // offset: 0x14 (20)
@@ -8429,9 +8389,9 @@ struct _KINTERRUPT {
   SHORT Type;                            // offset: 0x0 (0)
   SHORT Size;                            // offset: 0x2 (2)
   struct _LIST_ENTRY InterruptListEntry; // offset: 0x4 (4)
-  UCHAR (*ServiceRoutine)
+  UCHAR(*ServiceRoutine)
   (struct _KINTERRUPT *arg1, VOID *arg2); // offset: 0xc (12)
-  UCHAR (*MessageServiceRoutine)
+  UCHAR(*MessageServiceRoutine)
   (struct _KINTERRUPT *arg1, VOID *arg2, ULONG arg3); // offset: 0x10 (16)
   ULONG MessageIndex;                                 // offset: 0x14 (20)
   VOID *ServiceContext;                               // offset: 0x18 (24)
@@ -8745,7 +8705,7 @@ struct _HEAP {
   struct _HEAP_PSEUDO_TAG_ENTRY *PseudoTagEntries; // offset: 0xc0 (192)
   struct _LIST_ENTRY FreeLists;                    // offset: 0xc4 (196)
   struct _HEAP_LOCK *LockVariable;                 // offset: 0xcc (204)
-  LONG (*CommitRoutine)
+  LONG(*CommitRoutine)
   (VOID *arg1, VOID **arg2, ULONG *arg3);          // offset: 0xd0 (208)
   VOID *FrontEndHeap;                              // offset: 0xd4 (212)
   USHORT FrontHeapLockCount;                       // offset: 0xd8 (216)
@@ -9086,7 +9046,7 @@ struct _PCW_REGISTRATION_INFORMATION {
   struct _UNICODE_STRING *Name;             // offset: 0x4 (4)
   ULONG CounterCount;                       // offset: 0x8 (8)
   struct _PCW_COUNTER_DESCRIPTOR *Counters; // offset: 0xc (12)
-  LONG (*Callback)
+  LONG(*Callback)
   (enum _PCW_CALLBACK_TYPE arg1, union _PCW_CALLBACK_INFORMATION *arg2,
    VOID *arg3);          // offset: 0x10 (16)
   VOID *CallbackContext; // offset: 0x14 (20)
@@ -9809,63 +9769,63 @@ struct _ARBITER_INSTANCE {
   struct _ARBITER_INTERFACE *Interface;              // offset: 0x30 (48)
   ULONG AllocationStackMaxSize;                      // offset: 0x34 (52)
   struct _ARBITER_ALLOCATION_STATE *AllocationStack; // offset: 0x38 (56)
-  LONG (*UnpackRequirement)
+  LONG(*UnpackRequirement)
   (struct _IO_RESOURCE_DESCRIPTOR *arg1, ULONGLONG *arg2, ULONGLONG *arg3,
    ULONGLONG *arg4, ULONGLONG *arg5); // offset: 0x3c (60)
-  LONG (*PackResource)
+  LONG(*PackResource)
   (struct _IO_RESOURCE_DESCRIPTOR *arg1, ULONGLONG arg2,
    struct _CM_PARTIAL_RESOURCE_DESCRIPTOR *arg3); // offset: 0x40 (64)
-  LONG (*UnpackResource)
+  LONG(*UnpackResource)
   (struct _CM_PARTIAL_RESOURCE_DESCRIPTOR *arg1, ULONGLONG *arg2,
    ULONGLONG *arg3); // offset: 0x44 (68)
-  LONG (*ScoreRequirement)
+  LONG(*ScoreRequirement)
   (struct _IO_RESOURCE_DESCRIPTOR *arg1); // offset: 0x48 (72)
-  LONG (*TestAllocation)
+  LONG(*TestAllocation)
   (struct _ARBITER_INSTANCE *arg1,
    struct _ARBITER_TEST_ALLOCATION_PARAMETERS *arg2); // offset: 0x4c (76)
-  LONG (*RetestAllocation)
+  LONG(*RetestAllocation)
   (struct _ARBITER_INSTANCE *arg1,
    struct _ARBITER_RETEST_ALLOCATION_PARAMETERS *arg2);     // offset: 0x50 (80)
   LONG (*CommitAllocation)(struct _ARBITER_INSTANCE *arg1); // offset: 0x54 (84)
-  LONG (*RollbackAllocation)
+  LONG(*RollbackAllocation)
   (struct _ARBITER_INSTANCE *arg1); // offset: 0x58 (88)
-  LONG (*BootAllocation)
+  LONG(*BootAllocation)
   (struct _ARBITER_INSTANCE *arg1,
    struct _ARBITER_BOOT_ALLOCATION_PARAMETERS *arg2); // offset: 0x5c (92)
-  LONG (*QueryArbitrate)
+  LONG(*QueryArbitrate)
   (struct _ARBITER_INSTANCE *arg1,
    struct _ARBITER_QUERY_ARBITRATE_PARAMETERS *arg2); // offset: 0x60 (96)
-  LONG (*QueryConflict)
+  LONG(*QueryConflict)
   (struct _ARBITER_INSTANCE *arg1,
    struct _ARBITER_QUERY_CONFLICT_PARAMETERS *arg2); // offset: 0x64 (100)
-  LONG (*AddReserved)
+  LONG(*AddReserved)
   (struct _ARBITER_INSTANCE *arg1,
    struct _ARBITER_ADD_RESERVED_PARAMETERS *arg2); // offset: 0x68 (104)
-  LONG (*StartArbiter)
+  LONG(*StartArbiter)
   (struct _ARBITER_INSTANCE *arg1,
    struct _CM_RESOURCE_LIST *arg2); // offset: 0x6c (108)
-  LONG (*PreprocessEntry)
+  LONG(*PreprocessEntry)
   (struct _ARBITER_INSTANCE *arg1,
    struct _ARBITER_ALLOCATION_STATE *arg2); // offset: 0x70 (112)
-  LONG (*AllocateEntry)
+  LONG(*AllocateEntry)
   (struct _ARBITER_INSTANCE *arg1,
    struct _ARBITER_ALLOCATION_STATE *arg2); // offset: 0x74 (116)
-  UCHAR (*GetNextAllocationRange)
+  UCHAR(*GetNextAllocationRange)
   (struct _ARBITER_INSTANCE *arg1,
    struct _ARBITER_ALLOCATION_STATE *arg2); // offset: 0x78 (120)
-  UCHAR (*FindSuitableRange)
+  UCHAR(*FindSuitableRange)
   (struct _ARBITER_INSTANCE *arg1,
    struct _ARBITER_ALLOCATION_STATE *arg2); // offset: 0x7c (124)
-  VOID (*AddAllocation)
+  VOID(*AddAllocation)
   (struct _ARBITER_INSTANCE *arg1,
    struct _ARBITER_ALLOCATION_STATE *arg2); // offset: 0x80 (128)
-  VOID (*BacktrackAllocation)
+  VOID(*BacktrackAllocation)
   (struct _ARBITER_INSTANCE *arg1,
    struct _ARBITER_ALLOCATION_STATE *arg2); // offset: 0x84 (132)
-  UCHAR (*OverrideConflict)
+  UCHAR(*OverrideConflict)
   (struct _ARBITER_INSTANCE *arg1,
    struct _ARBITER_ALLOCATION_STATE *arg2); // offset: 0x88 (136)
-  LONG (*InitializeRangeList)
+  LONG(*InitializeRangeList)
   (struct _ARBITER_INSTANCE *arg1, ULONG arg2,
    struct _CM_PARTIAL_RESOURCE_DESCRIPTOR *arg3,
    struct _RTL_RANGE_LIST *arg4);         // offset: 0x8c (140)
@@ -9874,7 +9834,7 @@ struct _ARBITER_INSTANCE {
   VOID *Extension;                        // offset: 0x98 (152)
   struct _DEVICE_OBJECT *BusDeviceObject; // offset: 0x9c (156)
   VOID *ConflictCallbackContext;          // offset: 0xa0 (160)
-  UCHAR (*ConflictCallback)
+  UCHAR(*ConflictCallback)
   (VOID *arg1, struct _RTL_RANGE *arg2); // offset: 0xa4 (164)
   WCHAR PdoDescriptionString[336];       // offset: 0xa8 (168)
   CHAR PdoSymbolicNameString[672];       // offset: 0x348 (840)
@@ -9905,13 +9865,13 @@ struct _PPM_PERF_STATES {
 
   } Flags;                               // offset: 0x2c (44)
   struct _KAFFINITY_EX TargetProcessors; // offset: 0x30 (48)
-  LONG (*PStateHandler)
+  LONG(*PStateHandler)
   (ULONG arg1, ULONGLONG arg2, ULONGLONG arg3); // offset: 0x3c (60)
   ULONG PStateContext;                          // offset: 0x40 (64)
-  LONG (*TStateHandler)
+  LONG(*TStateHandler)
   (ULONG arg1, ULONGLONG arg2, ULONGLONG arg3); // offset: 0x44 (68)
   ULONG TStateContext;                          // offset: 0x48 (72)
-  UCHAR (*FeedbackHandler)
+  UCHAR(*FeedbackHandler)
   (ULONG *arg1, ULONG arg2, UCHAR arg3);        // offset: 0x4c (76)
   VOID (*GetFFHThrottleState)(ULONGLONG *arg1); // offset: 0x50 (80)
   struct _PPM_PERF_STATE State[1];              // offset: 0x58 (88)
@@ -10039,7 +9999,7 @@ struct _GENERAL_LOOKASIDE {
                       ULONG arg3); // offset: 0x28 (40)
   };
   union {
-    VOID (*FreeEx)
+    VOID(*FreeEx)
     (VOID *arg1, struct _LOOKASIDE_LIST_EX *arg2); // offset: 0x2c (44)
     VOID (*Free)(VOID *arg1);                      // offset: 0x2c (44)
   };
@@ -10107,7 +10067,7 @@ struct _GENERAL_LOOKASIDE_POOL {
                       ULONG arg3); // offset: 0x28 (40)
   };
   union {
-    VOID (*FreeEx)
+    VOID(*FreeEx)
     (VOID *arg1, struct _LOOKASIDE_LIST_EX *arg2); // offset: 0x2c (44)
     VOID (*Free)(VOID *arg1);                      // offset: 0x2c (44)
   };
@@ -10383,7 +10343,7 @@ struct _KPRCB {
   UCHAR PrcbPad3[52];              // offset: 0x182c (6188)
   VOID *volatile CurrentPacket[3]; // offset: 0x1860 (6240)
   volatile ULONG TargetSet;        // offset: 0x186c (6252)
-  VOID (*volatileWorkerRoutine)
+  VOID(*volatileWorkerRoutine)
   (VOID *arg1, VOID *arg2, VOID *arg3, VOID *arg4); // offset: 0x1870 (6256)
   volatile ULONG IpiFrozen;                         // offset: 0x1874 (6260)
   UCHAR PrcbPad4[40];                               // offset: 0x1878 (6264)
@@ -10515,16 +10475,16 @@ struct _KPRCB {
   ULONG ExAcqResSharedNotAcquires;                   // offset: 0x35c0 (13760)
   ULONG ExAcqResSharedStarveExclusiveAttempts;       // offset: 0x35c4 (13764)
   ULONG
-      ExAcqResSharedStarveExclusiveAcquiresExclusive; // offset: 0x35c8 (13768)
-  ULONG ExAcqResSharedStarveExclusiveAcquiresShared;  // offset: 0x35cc (13772)
+  ExAcqResSharedStarveExclusiveAcquiresExclusive;    // offset: 0x35c8 (13768)
+  ULONG ExAcqResSharedStarveExclusiveAcquiresShared; // offset: 0x35cc (13772)
   ULONG ExAcqResSharedStarveExclusiveAcquiresSharedRecursive; // offset: 0x35d0
                                                               // (13776)
   ULONG ExAcqResSharedStarveExclusiveWaits;       // offset: 0x35d4 (13780)
   ULONG ExAcqResSharedStarveExclusiveNotAcquires; // offset: 0x35d8 (13784)
   ULONG ExAcqResSharedWaitForExclusiveAttempts;   // offset: 0x35dc (13788)
   ULONG
-      ExAcqResSharedWaitForExclusiveAcquiresExclusive; // offset: 0x35e0 (13792)
-  ULONG ExAcqResSharedWaitForExclusiveAcquiresShared;  // offset: 0x35e4 (13796)
+  ExAcqResSharedWaitForExclusiveAcquiresExclusive;    // offset: 0x35e0 (13792)
+  ULONG ExAcqResSharedWaitForExclusiveAcquiresShared; // offset: 0x35e4 (13796)
   ULONG ExAcqResSharedWaitForExclusiveAcquiresSharedRecursive; // offset: 0x35e8
                                                                // (13800)
   ULONG ExAcqResSharedWaitForExclusiveWaits;           // offset: 0x35ec (13804)
@@ -10839,11 +10799,11 @@ struct _PROC_PERF_DOMAIN {
   struct _LIST_ENTRY Link;      // offset: 0x0 (0)
   struct _KPRCB *Master;        // offset: 0x8 (8)
   struct _KAFFINITY_EX Members; // offset: 0xc (12)
-  UCHAR (*FeedbackHandler)
+  UCHAR(*FeedbackHandler)
   (ULONG *arg1, ULONG arg2, UCHAR arg3);        // offset: 0x18 (24)
   VOID (*GetFFHThrottleState)(ULONGLONG *arg1); // offset: 0x1c (28)
   VOID (*BoostPolicyHandler)(ULONG arg1);       // offset: 0x20 (32)
-  ULONG (*PerfSelectionHandler)
+  ULONG(*PerfSelectionHandler)
   (ULONG arg1, ULONG arg2, ULONG arg3, ULONG arg4, ULONG arg5, ULONG *arg6,
    ULONG *arg7);                               // offset: 0x24 (36)
   VOID (*PerfHandler)(ULONG arg1, ULONG arg2); // offset: 0x28 (40)
@@ -11390,7 +11350,7 @@ struct _WMI_LOGGER_CONTEXT {
   ULONG LocalSequence;                   // offset: 0xb8 (184)
   struct _GUID InstanceGuid;             // offset: 0xbc (188)
   LONG FileCounter;                      // offset: 0xcc (204)
-  VOID (*volatileBufferCallback)
+  VOID(*volatileBufferCallback)
   (struct _WMI_BUFFER_HEADER *arg1, VOID *arg2);     // offset: 0xd0 (208)
   enum _POOL_TYPE PoolType;                          // offset: 0xd4 (212)
   struct _ETW_REF_CLOCK ReferenceTime;               // offset: 0xd8 (216)
@@ -11472,28 +11432,28 @@ struct _OBJECT_TYPE_INITIALIZER {
   enum _POOL_TYPE PoolType;               // offset: 0x24 (36)
   ULONG DefaultPagedPoolCharge;           // offset: 0x28 (40)
   ULONG DefaultNonPagedPoolCharge;        // offset: 0x2c (44)
-  VOID (*DumpProcedure)
+  VOID(*DumpProcedure)
   (VOID *arg1, struct _OBJECT_DUMP_CONTROL *arg2); // offset: 0x30 (48)
-  LONG (*OpenProcedure)
+  LONG(*OpenProcedure)
   (enum _OB_OPEN_REASON arg1, CHAR arg2, struct _EPROCESS *arg3, VOID *arg4,
    ULONG *arg5, ULONG arg6); // offset: 0x34 (52)
-  VOID (*CloseProcedure)
+  VOID(*CloseProcedure)
   (struct _EPROCESS *arg1, VOID *arg2, ULONG arg3,
    ULONG arg4);                        // offset: 0x38 (56)
   VOID (*DeleteProcedure)(VOID *arg1); // offset: 0x3c (60)
-  LONG (*ParseProcedure)
+  LONG(*ParseProcedure)
   (VOID *arg1, VOID *arg2, struct _ACCESS_STATE *arg3, CHAR arg4, ULONG arg5,
    struct _UNICODE_STRING *arg6, struct _UNICODE_STRING *arg7, VOID *arg8,
    struct _SECURITY_QUALITY_OF_SERVICE *arg9,
    VOID **arg10); // offset: 0x40 (64)
-  LONG (*SecurityProcedure)
+  LONG(*SecurityProcedure)
   (VOID *arg1, enum _SECURITY_OPERATION_CODE arg2, ULONG *arg3, VOID *arg4,
    ULONG *arg5, VOID **arg6, enum _POOL_TYPE arg7,
    struct _GENERIC_MAPPING *arg8, CHAR arg9); // offset: 0x44 (68)
-  LONG (*QueryNameProcedure)
+  LONG(*QueryNameProcedure)
   (VOID *arg1, UCHAR arg2, struct _OBJECT_NAME_INFORMATION *arg3, ULONG arg4,
    ULONG *arg5, CHAR arg6); // offset: 0x48 (72)
-  UCHAR (*OkayToCloseProcedure)
+  UCHAR(*OkayToCloseProcedure)
   (struct _EPROCESS *arg1, VOID *arg2, VOID *arg3,
    CHAR arg4); // offset: 0x4c (76)
 };
@@ -11791,7 +11751,7 @@ struct _KRESOURCEMANAGER {
   struct _KMUTANT NotificationMutex;              // offset: 0x88 (136)
   struct _LIST_ENTRY EnlistmentHead;              // offset: 0xa8 (168)
   ULONG EnlistmentCount;                          // offset: 0xb0 (176)
-  LONG (*NotificationRoutine)
+  LONG(*NotificationRoutine)
   (struct _KENLISTMENT *arg1, VOID *arg2, VOID *arg3, ULONG arg4,
    union _LARGE_INTEGER *arg5, ULONG arg6, VOID *arg7); // offset: 0xb4 (180)
   VOID *Key;                                            // offset: 0xb8 (184)
@@ -12034,102 +11994,102 @@ struct _HANDLE_TABLE {
 // 0x70 (112) bytes
 struct _FAST_IO_DISPATCH {
   ULONG SizeOfFastIoDispatch; // offset: 0x0 (0)
-  UCHAR (*FastIoCheckIfPossible)
+  UCHAR(*FastIoCheckIfPossible)
   (struct _FILE_OBJECT *arg1, union _LARGE_INTEGER *arg2, ULONG arg3,
    UCHAR arg4, ULONG arg5, UCHAR arg6, struct _IO_STATUS_BLOCK *arg7,
    struct _DEVICE_OBJECT *arg8); // offset: 0x4 (4)
-  UCHAR (*FastIoRead)
+  UCHAR(*FastIoRead)
   (struct _FILE_OBJECT *arg1, union _LARGE_INTEGER *arg2, ULONG arg3,
    UCHAR arg4, ULONG arg5, VOID *arg6, struct _IO_STATUS_BLOCK *arg7,
    struct _DEVICE_OBJECT *arg8); // offset: 0x8 (8)
-  UCHAR (*FastIoWrite)
+  UCHAR(*FastIoWrite)
   (struct _FILE_OBJECT *arg1, union _LARGE_INTEGER *arg2, ULONG arg3,
    UCHAR arg4, ULONG arg5, VOID *arg6, struct _IO_STATUS_BLOCK *arg7,
    struct _DEVICE_OBJECT *arg8); // offset: 0xc (12)
-  UCHAR (*FastIoQueryBasicInfo)
+  UCHAR(*FastIoQueryBasicInfo)
   (struct _FILE_OBJECT *arg1, UCHAR arg2, struct _FILE_BASIC_INFORMATION *arg3,
    struct _IO_STATUS_BLOCK *arg4,
    struct _DEVICE_OBJECT *arg5); // offset: 0x10 (16)
-  UCHAR (*FastIoQueryStandardInfo)
+  UCHAR(*FastIoQueryStandardInfo)
   (struct _FILE_OBJECT *arg1, UCHAR arg2,
    struct _FILE_STANDARD_INFORMATION *arg3, struct _IO_STATUS_BLOCK *arg4,
    struct _DEVICE_OBJECT *arg5); // offset: 0x14 (20)
-  UCHAR (*FastIoLock)
+  UCHAR(*FastIoLock)
   (struct _FILE_OBJECT *arg1, union _LARGE_INTEGER *arg2,
    union _LARGE_INTEGER *arg3, struct _EPROCESS *arg4, ULONG arg5, UCHAR arg6,
    UCHAR arg7, struct _IO_STATUS_BLOCK *arg8,
    struct _DEVICE_OBJECT *arg9); // offset: 0x18 (24)
-  UCHAR (*FastIoUnlockSingle)
+  UCHAR(*FastIoUnlockSingle)
   (struct _FILE_OBJECT *arg1, union _LARGE_INTEGER *arg2,
    union _LARGE_INTEGER *arg3, struct _EPROCESS *arg4, ULONG arg5,
    struct _IO_STATUS_BLOCK *arg6,
    struct _DEVICE_OBJECT *arg7); // offset: 0x1c (28)
-  UCHAR (*FastIoUnlockAll)
+  UCHAR(*FastIoUnlockAll)
   (struct _FILE_OBJECT *arg1, struct _EPROCESS *arg2,
    struct _IO_STATUS_BLOCK *arg3,
    struct _DEVICE_OBJECT *arg4); // offset: 0x20 (32)
-  UCHAR (*FastIoUnlockAllByKey)
+  UCHAR(*FastIoUnlockAllByKey)
   (struct _FILE_OBJECT *arg1, VOID *arg2, ULONG arg3,
    struct _IO_STATUS_BLOCK *arg4,
    struct _DEVICE_OBJECT *arg5); // offset: 0x24 (36)
-  UCHAR (*FastIoDeviceControl)
+  UCHAR(*FastIoDeviceControl)
   (struct _FILE_OBJECT *arg1, UCHAR arg2, VOID *arg3, ULONG arg4, VOID *arg5,
    ULONG arg6, ULONG arg7, struct _IO_STATUS_BLOCK *arg8,
    struct _DEVICE_OBJECT *arg9); // offset: 0x28 (40)
-  VOID (*AcquireFileForNtCreateSection)
+  VOID(*AcquireFileForNtCreateSection)
   (struct _FILE_OBJECT *arg1); // offset: 0x2c (44)
-  VOID (*ReleaseFileForNtCreateSection)
+  VOID(*ReleaseFileForNtCreateSection)
   (struct _FILE_OBJECT *arg1); // offset: 0x30 (48)
-  VOID (*FastIoDetachDevice)
+  VOID(*FastIoDetachDevice)
   (struct _DEVICE_OBJECT *arg1,
    struct _DEVICE_OBJECT *arg2); // offset: 0x34 (52)
-  UCHAR (*FastIoQueryNetworkOpenInfo)
+  UCHAR(*FastIoQueryNetworkOpenInfo)
   (struct _FILE_OBJECT *arg1, UCHAR arg2,
    struct _FILE_NETWORK_OPEN_INFORMATION *arg3, struct _IO_STATUS_BLOCK *arg4,
    struct _DEVICE_OBJECT *arg5); // offset: 0x38 (56)
-  LONG (*AcquireForModWrite)
+  LONG(*AcquireForModWrite)
   (struct _FILE_OBJECT *arg1, union _LARGE_INTEGER *arg2,
    struct _ERESOURCE **arg3, struct _DEVICE_OBJECT *arg4); // offset: 0x3c (60)
-  UCHAR (*MdlRead)
+  UCHAR(*MdlRead)
   (struct _FILE_OBJECT *arg1, union _LARGE_INTEGER *arg2, ULONG arg3,
    ULONG arg4, struct _MDL **arg5, struct _IO_STATUS_BLOCK *arg6,
    struct _DEVICE_OBJECT *arg7); // offset: 0x40 (64)
-  UCHAR (*MdlReadComplete)
+  UCHAR(*MdlReadComplete)
   (struct _FILE_OBJECT *arg1, struct _MDL *arg2,
    struct _DEVICE_OBJECT *arg3); // offset: 0x44 (68)
-  UCHAR (*PrepareMdlWrite)
+  UCHAR(*PrepareMdlWrite)
   (struct _FILE_OBJECT *arg1, union _LARGE_INTEGER *arg2, ULONG arg3,
    ULONG arg4, struct _MDL **arg5, struct _IO_STATUS_BLOCK *arg6,
    struct _DEVICE_OBJECT *arg7); // offset: 0x48 (72)
-  UCHAR (*MdlWriteComplete)
+  UCHAR(*MdlWriteComplete)
   (struct _FILE_OBJECT *arg1, union _LARGE_INTEGER *arg2, struct _MDL *arg3,
    struct _DEVICE_OBJECT *arg4); // offset: 0x4c (76)
-  UCHAR (*FastIoReadCompressed)
+  UCHAR(*FastIoReadCompressed)
   (struct _FILE_OBJECT *arg1, union _LARGE_INTEGER *arg2, ULONG arg3,
    ULONG arg4, VOID *arg5, struct _MDL **arg6, struct _IO_STATUS_BLOCK *arg7,
    struct _COMPRESSED_DATA_INFO *arg8, ULONG arg9,
    struct _DEVICE_OBJECT *arg10); // offset: 0x50 (80)
-  UCHAR (*FastIoWriteCompressed)
+  UCHAR(*FastIoWriteCompressed)
   (struct _FILE_OBJECT *arg1, union _LARGE_INTEGER *arg2, ULONG arg3,
    ULONG arg4, VOID *arg5, struct _MDL **arg6, struct _IO_STATUS_BLOCK *arg7,
    struct _COMPRESSED_DATA_INFO *arg8, ULONG arg9,
    struct _DEVICE_OBJECT *arg10); // offset: 0x54 (84)
-  UCHAR (*MdlReadCompleteCompressed)
+  UCHAR(*MdlReadCompleteCompressed)
   (struct _FILE_OBJECT *arg1, struct _MDL *arg2,
    struct _DEVICE_OBJECT *arg3); // offset: 0x58 (88)
-  UCHAR (*MdlWriteCompleteCompressed)
+  UCHAR(*MdlWriteCompleteCompressed)
   (struct _FILE_OBJECT *arg1, union _LARGE_INTEGER *arg2, struct _MDL *arg3,
    struct _DEVICE_OBJECT *arg4); // offset: 0x5c (92)
-  UCHAR (*FastIoQueryOpen)
+  UCHAR(*FastIoQueryOpen)
   (struct _IRP *arg1, struct _FILE_NETWORK_OPEN_INFORMATION *arg2,
    struct _DEVICE_OBJECT *arg3); // offset: 0x60 (96)
-  LONG (*ReleaseForModWrite)
+  LONG(*ReleaseForModWrite)
   (struct _FILE_OBJECT *arg1, struct _ERESOURCE *arg2,
    struct _DEVICE_OBJECT *arg3); // offset: 0x64 (100)
-  LONG (*AcquireForCcFlush)
+  LONG(*AcquireForCcFlush)
   (struct _FILE_OBJECT *arg1,
    struct _DEVICE_OBJECT *arg2); // offset: 0x68 (104)
-  LONG (*ReleaseForCcFlush)
+  LONG(*ReleaseForCcFlush)
   (struct _FILE_OBJECT *arg1,
    struct _DEVICE_OBJECT *arg2); // offset: 0x6c (108)
 };
@@ -12147,13 +12107,13 @@ struct _DRIVER_OBJECT {
   struct _UNICODE_STRING DriverName;         // offset: 0x1c (28)
   struct _UNICODE_STRING *HardwareDatabase;  // offset: 0x24 (36)
   struct _FAST_IO_DISPATCH *FastIoDispatch;  // offset: 0x28 (40)
-  LONG (*DriverInit)
+  LONG(*DriverInit)
   (struct _DRIVER_OBJECT *arg1,
    struct _UNICODE_STRING *arg2); // offset: 0x2c (44)
-  VOID (*DriverStartIo)
+  VOID(*DriverStartIo)
   (struct _DEVICE_OBJECT *arg1, struct _IRP *arg2);  // offset: 0x30 (48)
   VOID (*DriverUnload)(struct _DRIVER_OBJECT *arg1); // offset: 0x34 (52)
-  LONG (*MajorFunction[28])
+  LONG(*MajorFunction[28])
   (struct _DEVICE_OBJECT *arg1, struct _IRP *arg2); // offset: 0x38 (56)
 };
 
@@ -12202,7 +12162,7 @@ struct _MM_SESSION_SPACE {
   struct _MM_PAGED_POOL_INFO PagedPoolInfo;       // offset: 0xd38 (3384)
   struct _MMSUPPORT Vm;                           // offset: 0xd70 (3440)
   struct _MMWSLE *Wsle;                           // offset: 0xddc (3548)
-  VOID (*volatileDriverUnload)
+  VOID(*volatileDriverUnload)
   (struct _DRIVER_OBJECT *arg1);             // offset: 0xde0 (3552)
   struct _POOL_DESCRIPTOR PagedPool;         // offset: 0xe00 (3584)
   struct _MMPTE *PageTables;                 // offset: 0x1f40 (8000)
@@ -12227,7 +12187,7 @@ struct _MM_SESSION_SPACE {
 // 0x1c (28) bytes
 struct _DRIVER_EXTENSION {
   struct _DRIVER_OBJECT *DriverObject; // offset: 0x0 (0)
-  LONG (*AddDevice)
+  LONG(*AddDevice)
   (struct _DRIVER_OBJECT *arg1, struct _DEVICE_OBJECT *arg2); // offset: 0x4 (4)
   ULONG Count;                                                // offset: 0x8 (8)
   struct _UNICODE_STRING ServiceKeyName;              // offset: 0xc (12)

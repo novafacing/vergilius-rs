@@ -1,19 +1,13 @@
 #include <stdint.h>
 
 // 0x0 (0) bytes
-struct _LDRP_DLL_SNAP_CONTEXT
-
-{};
+struct _LDRP_DLL_SNAP_CONTEXT {};
 
 // 0x0 (0) bytes
-struct _ADAPTER_OBJECT
-
-{};
+struct _ADAPTER_OBJECT {};
 
 // 0x0 (0) bytes
-struct _VERIFIER_SHARED_EXPORT_THUNK
-
-{};
+struct _VERIFIER_SHARED_EXPORT_THUNK {};
 
 // 0x10 (16) bytes
 struct _VF_TARGET_ALL_SHARED_EXPORT_THUNKS {
@@ -27,29 +21,19 @@ struct _VF_TARGET_ALL_SHARED_EXPORT_THUNKS {
 };
 
 // 0x0 (0) bytes
-struct _ACTIVATION_CONTEXT_DATA
-
-{};
+struct _ACTIVATION_CONTEXT_DATA {};
 
 // 0x0 (0) bytes
-struct _KTMNOTIFICATION_PACKET
-
-{};
+struct _KTMNOTIFICATION_PACKET {};
 
 // 0x0 (0) bytes
-struct _HAL_PMC_COUNTERS
-
-{};
+struct _HAL_PMC_COUNTERS {};
 
 // 0x0 (0) bytes
-struct _ETW_STACK_CACHE
-
-{};
+struct _ETW_STACK_CACHE {};
 
 // 0x0 (0) bytes
-struct _CALLBACK_OBJECT
-
-{};
+struct _CALLBACK_OBJECT {};
 
 typedef uint8_t UCHAR;
 
@@ -58,19 +42,13 @@ typedef uint64_t ULONGLONG;
 typedef void VOID;
 
 // 0x0 (0) bytes
-struct _PCW_INSTANCE
-
-{};
+struct _PCW_INSTANCE {};
 
 // 0x0 (0) bytes
-struct _PCW_BUFFER
-
-{};
+struct _PCW_BUFFER {};
 
 // 0x0 (0) bytes
-struct _PCW_REGISTRATION
-
-{};
+struct _PCW_REGISTRATION {};
 
 typedef uint32_t ULONG;
 
@@ -105,34 +83,22 @@ struct _MMSECTION_FLAGS {
 typedef int16_t SHORT;
 
 // 0x0 (0) bytes
-struct _SCSI_REQUEST_BLOCK
-
-{};
+struct _SCSI_REQUEST_BLOCK {};
 
 // 0x0 (0) bytes
-struct _JOB_CPU_RATE_CONTROL
-
-{};
+struct _JOB_CPU_RATE_CONTROL {};
 
 // 0x0 (0) bytes
-struct _JOB_NOTIFICATION_INFORMATION
-
-{};
+struct _JOB_NOTIFICATION_INFORMATION {};
 
 // 0x0 (0) bytes
-struct _JOB_ACCESS_STATE
-
-{};
+struct _JOB_ACCESS_STATE {};
 
 // 0x0 (0) bytes
-struct _EPROCESS_QUOTA_BLOCK
-
-{};
+struct _EPROCESS_QUOTA_BLOCK {};
 
 // 0x0 (0) bytes
-struct _PAGEFAULT_HISTORY
-
-{};
+struct _PAGEFAULT_HISTORY {};
 
 // 0x4 (4) bytes
 struct _ARBITER_ADD_RESERVED_PARAMETERS {
@@ -191,14 +157,10 @@ struct _ETW_BUFFER_QUEUE {
 typedef int8_t CHAR;
 
 // 0x0 (0) bytes
-struct _FLS_CALLBACK_INFO
-
-{};
+struct _FLS_CALLBACK_INFO {};
 
 // 0x0 (0) bytes
-struct _ASSEMBLY_STORAGE_MAP
-
-{};
+struct _ASSEMBLY_STORAGE_MAP {};
 
 // 0x4 (4) bytes
 struct _ARBITER_QUERY_ARBITRATE_PARAMETERS {
@@ -304,24 +266,16 @@ struct _CLIENT_ID {
 };
 
 // 0x0 (0) bytes
-struct _TP_CALLBACK_INSTANCE
-
-{};
+struct _TP_CALLBACK_INSTANCE {};
 
 // 0x0 (0) bytes
-struct _ACTIVATION_CONTEXT
-
-{};
+struct _ACTIVATION_CONTEXT {};
 
 // 0x0 (0) bytes
-struct _TP_CLEANUP_GROUP
-
-{};
+struct _TP_CLEANUP_GROUP {};
 
 // 0x0 (0) bytes
-struct _TP_POOL
-
-{};
+struct _TP_POOL {};
 
 typedef int32_t LONG;
 
